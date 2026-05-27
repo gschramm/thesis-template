@@ -1,0 +1,64 @@
+% Images in this chapter: use filenames relative to this folder.
+% e.g. \includegraphics{ch1/my-figure} (path from main.tex)
+% or set \graphicspath{{ch1/}} at the top of this file for bare filenames.
+
+\chapter{General introduction and dissertation outline}
+
+\clearpage
+\section{Some math}
+
+The convolution of two functions $f$ and $g$ is defined as
+\begin{equation}
+  (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\, g(t - \tau)\, d\tau,
+\end{equation}
+which appears frequently in signal processing and probability theory.
+The \ac{snr} of the recovered signal depends directly on the chosen kernel.
+
+\lipsum[1]
+
+
+\section{Background}
+\lipsum[1-3]
+
+An overview of the experimental setup is shown in Figure~\ref{fig:ch1-setup}. \lipsum[2]
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\linewidth]{example-image}
+  \caption{Placeholder figure caption. Describe what the figure shows, including
+           relevant panel labels (a), (b), units, and any abbreviations used.}
+  \label{fig:ch1-setup}
+\end{figure}
+
+\lipsum[5-7]
+
+A quantitative comparison of the three main approaches is given in
+Table~\ref{tab:ch1-methods}, grouped by performance metrics and computational
+cost~\cite{smith2020, doe2019}.
+
+\begin{table}
+  \centering
+  \caption{Comparison of three placeholder methods across performance metrics
+           and computational cost. Higher accuracy and F1 score are better;
+           lower runtime and memory usage are preferred.}
+  \label{tab:ch1-methods}
+  \footnotesize
+  \begin{tabular}{lcccc}
+    \toprule
+    & \multicolumn{2}{c}{Performance} & \multicolumn{2}{c}{Computational cost} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    Method    & Accuracy (\%) & F1 score & Runtime (s) & Memory (MB) \\
+    \midrule
+    Baseline  & 72.3          & 0.71     & 0.4         & 128         \\
+    Proposed  & 88.1          & 0.87     & 1.2         & 256         \\
+    Reference & 85.6          & 0.84     & 2.8         & 512         \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\lipsum[3]
+
+\section{Outline of the dissertation}
+\lipsum[4-6]
+
+\printbibliography[heading=subbibliography, title={References}]

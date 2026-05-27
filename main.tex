@@ -1,0 +1,47 @@
+\documentclass[11pt,b5paper,twoside,openright]{book}
+\input{preamble}
+
+\begin{document}
+
+%---- Front matter ------------------------------------------------------
+\frontmatter
+\pagestyle{plain}
+
+\begin{titlepage}
+  \centering
+  \vspace*{4cm}
+  {\Huge\bfseries Sample Thesis Title\par}
+  \vspace{1.5cm}
+  {\Large A demonstration of dissertation style\par}
+  \vfill
+  {\large Your Name\par}
+  \vspace{1cm}
+\end{titlepage}
+
+\cleardoublepage
+\tableofcontents
+
+%---- Main matter -------------------------------------------------------
+\mainmatter
+\pagestyle{fancy}
+
+\include{ch1/ch1}
+\include{ch2/ch2}
+\include{ch3/ch3}
+\include{ch4/ch4}
+
+%---- Appendix ----------------------------------------------------------
+\begin{appendices}
+\appendixpage
+\noappendicestocpagenum
+\addappheadtotoc
+
+\chapter{Lists of Figures, Tables, and Acronyms}
+
+\listoffigures
+\listoftables
+\printacronyms
+
+\end{appendices}
+
+\end{document}

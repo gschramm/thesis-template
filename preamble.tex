@@ -1,0 +1,111 @@
+%---- Page geometry -----------------------------------------------------
+\usepackage[
+  paper=b5paper,
+  inner=25mm, outer=20mm,
+  top=25mm, bottom=25mm,
+  headheight=14pt, headsep=8mm
+]{geometry}
+
+%---- Fonts (pdfLaTeX) --------------------------------------------------
+\usepackage{libertinus}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage[scaled=0.9]{helvet}
+\newcommand{\chapnumfont}{\fontfamily{phv}\fontseries{b}\selectfont}
+\newcommand{\chaptitlefont}{\rmfamily\bfseries}
+
+%---- Spacing -----------------------------------------------------------
+\usepackage{setspace}
+\setstretch{1.15}
+\setlength{\parindent}{1.2em}
+
+%---- Colors ------------------------------------------------------------
+\usepackage{xcolor}
+\definecolor{thesisblue}{RGB}{0, 51, 102}   % signature dark-navy blue
+\definecolor{headergray}{gray}{0.50}         % running-head tint
+
+%---- General packages --------------------------------------------------
+\usepackage{graphicx}
+\usepackage[labelfont=bf,font=footnotesize]{caption}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[
+  hidelinks,
+  pdftitle  = {Sample Thesis Title},
+  pdfauthor = {Your Name},
+]{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage[titletoc]{appendix}
+\usepackage{lipsum}
+
+%---- Bibliography (per-chapter) ----------------------------------------
+\usepackage[
+  backend    = biber,
+  style      = alphabetic,
+  sorting    = none,
+  refsection = chapter,
+]{biblatex}
+\addbibresource{ch1/ch1.bib}
+\addbibresource{ch2/ch2.bib}
+\addbibresource{ch3/ch3.bib}
+\addbibresource{ch4/ch4.bib}
+\addbibresource{ch5/ch5.bib}
+\addbibresource{ch6/ch6.bib}
+\addbibresource{ch7/ch7.bib}
+\addbibresource{ch8/ch8.bib}
+\AtBeginBibliography{\footnotesize}
+
+%---- Acronyms ----------------------------------------------------------
+\usepackage{acro}
+\DeclareAcronym{snr}{short = SNR,  long = signal-to-noise ratio}
+\DeclareAcronym{qc} {short = QC,   long = quality control}
+\DeclareAcronym{cdf}{short = CDF,  long = cumulative distribution function}
+\DeclareAcronym{roc}{short = ROC,  long = receiver operating characteristic}
+\DeclareAcronym{ml} {short = ML,   long = machine learning}
+
+%---- Thumb index (thumbs package) --------------------------------------
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{picture}[=v1]% force old picture syntax needed by thumbs
+\usepackage[
+  height=10mm,
+  width=auto,
+]{thumbs}
+
+%---- Chapter title format (titlesec) -----------------------------------
+\titleformat{\chapter}[display]
+  {\normalfont\raggedleft\vspace*{0.0cm}}
+  {\color{thesisblue}\sffamily\bfseries\fontsize{96pt}{96pt}\selectfont\thechapter}
+  {6pt}
+  {\Huge\bfseries}
+\titlespacing*{\chapter}{0pt}{0pt}{2cm}
+
+\titleformat{\section}{\bfseries\large}{\thesection}{1em}{}
+\titleformat{\subsection}{\bfseries\normalsize}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\bfseries\normalsize}{\thesubsubsection}{1em}{}
+
+%%---- Headers & footers -------------------------------------------------
+
+% Wrapped in \AtBeginDocument so this runs after all package \AtBeginDocument
+% hooks (thumbs, biblatex, titlesec) and cannot be overridden by them.
+\AtBeginDocument{%
+  % \markboth sets: leftmark  = "Chapter N"  (shown on left/even pages)
+  %                 rightmark = chapter title (shown on right/odd pages)
+  \renewcommand{\chaptermark}[1]{%
+    \markboth{Chapter~\arabic{chapter}}{#1}%
+    \addthumb{#1}{\thechapter}{white}{thesisblue}%
+  }%
+  \renewcommand{\sectionmark}[1]{}% keep rightmark = chapter title, not section
+  \pagestyle{fancy}%
+  \fancyhf{}%
+  \fancyhead[LE]{\small\textcolor{headergray}{\leftmark}}%   left-aligned on left pages
+  \fancyhead[RO]{\small\textcolor{headergray}{\nouppercase{\rightmark}}}% right-aligned on right pages
+}
+
+%========================================================================
+\title{Sample Thesis Title}
+\author{Your Name}
+\date{}
