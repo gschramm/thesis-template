@@ -12,7 +12,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
-\usepackage[scaled=0.9]{helvet}
+%\usepackage[scaled=0.9]{helvet}
 \newcommand{\chapnumfont}{\fontfamily{phv}\fontseries{b}\selectfont}
 \newcommand{\chaptitlefont}{\rmfamily\bfseries}
 
@@ -36,8 +36,6 @@
   pdftitle  = {Sample Thesis Title},
   pdfauthor = {Your Name},
 ]{hyperref}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 \usepackage[titletoc]{appendix}
 \usepackage{lipsum}
 
@@ -52,10 +50,6 @@
 \addbibresource{ch2/ch2.bib}
 \addbibresource{ch3/ch3.bib}
 \addbibresource{ch4/ch4.bib}
-\addbibresource{ch5/ch5.bib}
-\addbibresource{ch6/ch6.bib}
-\addbibresource{ch7/ch7.bib}
-\addbibresource{ch8/ch8.bib}
 \AtBeginBibliography{\footnotesize}
 
 %---- Acronyms ----------------------------------------------------------
@@ -75,28 +69,29 @@
   width=auto,
 ]{thumbs}
 
-%---- Chapter title format (titlesec) -----------------------------------
+%%---- Chapter title format (titlesec) -----------------------------------
 \titleformat{\chapter}[display]
-  {\normalfont\raggedleft\vspace*{0.0cm}}
+  {\normalfont\raggedright}
   {\color{thesisblue}\sffamily\bfseries\fontsize{96pt}{96pt}\selectfont\thechapter}
   {6pt}
-  {\Huge\bfseries}
-\titlespacing*{\chapter}{0pt}{0pt}{2cm}
+  {\Huge\bfseries\sffamily}
 
-\titleformat{\section}{\bfseries\large}{\thesection}{1em}{}
-\titleformat{\subsection}{\bfseries\normalsize}{\thesubsection}{1em}{}
-\titleformat{\subsubsection}{\bfseries\normalsize}{\thesubsubsection}{1em}{}
+\titleformat{\section}{\bfseries\large\sffamily}{\thesection}{1em}{}
+\titleformat{\subsection}{\bfseries\normalsize\sffamily}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\bfseries\normalsize\sffamily}{\thesubsubsection}{1em}{}
+  
 
 %%---- Headers & footers -------------------------------------------------
 
 % Wrapped in \AtBeginDocument so this runs after all package \AtBeginDocument
 % hooks (thumbs, biblatex, titlesec) and cannot be overridden by them.
 \AtBeginDocument{%
+   % Patch for pageslts bug: thumbs appear on wrong (inner) side
   % \markboth sets: leftmark  = "Chapter N"  (shown on left/even pages)
   %                 rightmark = chapter title (shown on right/odd pages)
   \renewcommand{\chaptermark}[1]{%
     \markboth{Chapter~\arabic{chapter}}{#1}%
-    \addthumb{#1}{\thechapter}{white}{thesisblue}%
+    %\addthumb{#1}{\thechapter}{white}{thesisblue}%
   }%
   \renewcommand{\sectionmark}[1]{}% keep rightmark = chapter title, not section
   \pagestyle{fancy}%
@@ -105,6 +100,9 @@
   \fancyhead[RO]{\small\textcolor{headergray}{\nouppercase{\rightmark}}}% right-aligned on right pages
 }
 
+%%---- tikz
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 %========================================================================
 \title{Sample Thesis Title}
 \author{Your Name}

@@ -1,9 +1,9 @@
-\documentclass[11pt,b5paper,twoside,openright]{book}
+\documentclass[10pt,b5paper,twoside,openright]{book}
 \input{preamble}
 
 \begin{document}
 
-%---- Front matter ------------------------------------------------------
+%---- Front matter (Title page, TOC) --------------------------------
 \frontmatter
 \pagestyle{plain}
 
@@ -21,7 +21,10 @@
 \cleardoublepage
 \tableofcontents
 
-%---- Main matter -------------------------------------------------------
+\printacronyms
+
+%---- Main matter (Chapters) -------------------------------------
+
 \mainmatter
 \pagestyle{fancy}
 
@@ -30,18 +33,11 @@
 \include{ch3/ch3}
 \include{ch4/ch4}
 
-%---- Appendix ----------------------------------------------------------
-\begin{appendices}
-\appendixpage
-\noappendicestocpagenum
-\addappheadtotoc
+\stopthumb
 
-\chapter{Lists of Figures, Tables, and Acronyms}
-
-\listoffigures
-\listoftables
-\printacronyms
-
-\end{appendices}
+%---- Back matter (Lists) -------------------------------------
+\backmatter
+\listoffigures % not essential
+\listoftables  % not essential
 
 \end{document}

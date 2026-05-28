@@ -1,0 +1,1651 @@
+%%
+%% This is file `thumbs.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% thumbs.dtx  (with options: `package')
+%% 
+%% This is a generated file.
+%% 
+%% Project: thumbs
+%% Version: 2026-01-18 v1.1d
+%% Info: Thumb marks and overview page(s)
+%% 
+%% Copyright (C) 2010 - 2026 by
+%%     H.-Martin Muench <Martin dot Muench at Uni-Bonn dot de>
+%% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either
+%% version 1.3c of this license or (at your option) any later
+%% version. This version of this license is in
+%%    https://www.latex-project.org/lppl/lppl-1-3c.txt
+%% and the latest version of this license is in
+%%    https://www.latex-project.org/lppl.txt
+%% and version 1.3c or later is part of all distributions of
+%% LaTeX version 2005-12-01 or later.
+%% 
+%% This work has the LPPL maintenance status "maintained".
+%% 
+%% The Current Maintainer of this work is H.-Martin Muench.
+%% 
+%% This work consists of the main source file thumbs.dtx,
+%% the README, and the derived files
+%%    thumbs.sty, thumbs.pdf,
+%%    thumbs.ins, thumbs.drv,
+%%    thumbs-example.tex, thumbs-example.pdf.
+%% 
+%% In memoriam
+%%  Claudia Simone Barth + 1996-01-30
+%%  Tommy Muench         + 2014-01-02
+%%  Hans-Klaus Muench    + 2014-08-24
+%% 
+\NeedsTeXFormat{LaTeX2e}[2025/06/01]
+\@ifl@t@r\fmtversion{2025/06/01}{% would have understood
+ % \IfFormatAtLeastTF{2025-06-01}{<true code>}{<false code>}
+ }{\PackageError{thumbs}{Newer LaTeX format needed or older thumbs package}{%
+     Needed LaTeX format version: 2025-06-01 or newer.\MessageBreak%
+     Found\space\space LaTeX format version: \fmtversion.\MessageBreak%
+     Either update your TeX distribution\MessageBreak%
+     or use an archived version of thumbs\MessageBreak%
+     (see section History in the documentation).}
+  }
+\ProvidesPackage{thumbs}[2026-01-18 v1.1d Thumb marks and overview page(s) (HMM)]
+
+%% This package allows to create a customizable thumb index (edge index),
+%% providing a quick and easy reference method for large documents,
+%% as well as one or several overview page(s).
+
+\RequirePackage{xcolor}[2024/09/29]%         v3.02 LaTeX color extensions (UK)
+\RequirePackage{picture}[2020-04-22]%        v1.6  Dimens for picture macros (HO)
+\RequirePackage{alphalph}[2019/12/09]%       v2.6  Convert numbers to letters (HO)
+\RequirePackage{rerunfilecheck}[2025-06-21]% v1.11 Rerun checks for auxiliary files (HO)
+\RequirePackage{pagecolor}[2025-01-28]%      v1.2d Provides thepagecolor (HMM)
+\RequirePackage{undolabl}[2025-01-28]%       v1.0o Overriding labels (HMM)
+
+\DeclareKeys[thumbs]{
+  % OBSOLETE: pagecolor  -> use \pagecolor{...} after \usepackage[...]{thumbs} and before \begin{document}
+  % OBSOLETE: evenindent -> eventxtindent
+  % OBSOLETE: oddexdent  -> oddtxtexdent
+  linefill          .store = \thumbs@linefill,
+  thumblink         .store = \thumbs@thumblink,
+  minheight         .store = \thumbs@minheight,
+  height            .store = \thumbs@height,
+  width             .store = \thumbs@width,
+  distance          .store = \thumbs@distance,
+  topthumbmargin    .store = \thumbs@topthumbmargin,
+  bottomthumbmargin .store = \thumbs@bottomthumbmargin,
+  eventxtindent     .store = \thumbs@eventxtindent,
+  oddtxtexdent      .store = \thumbs@oddtxtexdent,
+  evenmarkindent    .store = \thumbs@evenmarkindent,
+  oddmarkexdent     .store = \thumbs@oddmarkexdent,
+  evenprintvoffset  .store = \thumbs@evenprintvoffset,
+  leftindexruleplus .store = \thumbs@leftindexruleplus,
+  frame             .store = \thumbs@frame,
+  frameinnercolor   .store = \thumbs@frameinnercolor,
+  txtcentered         .if = thumbs@txtcentered,
+  ignorehoffset       .if = thumbs@ignorehoffset,
+  ignorevoffset       .if = thumbs@ignorevoffset,
+  nophantomsection    .if = thumbs@nophantomsection,
+  plainthumbsoverview .if = thumbs@plainthumbsoverview,
+  verbose             .if = thumbs@verbose,
+  silent              .code = \thumbs@verbosefalse,
+  draft               .if = thumbs@draft,
+  final               .code = \thumbs@draftfalse,
+  hidethumbs          .if = thumbs@hidethumbs,
+  righttoleft         .if = thumbs@righttoleft
+}
+
+\SetKeys[thumbs]{
+  linefill          = dots,
+  thumblink         = rule,
+  minheight         = 47pt,
+  height            = auto,
+  width             = auto,
+  distance          = 2mm,
+  topthumbmargin    = auto,
+  bottomthumbmargin = auto,
+  eventxtindent     = 5pt,
+  oddtxtexdent      = 5pt,
+  evenmarkindent    = 0pt,
+  oddmarkexdent     = 0pt,
+  evenprintvoffset  = 0pt,
+  leftindexruleplus = 0pt,
+  frame             = \empty,
+  frameinnercolor   = \thepagecolor,
+  txtcentered       = false,
+  ignorehoffset     = true,
+  ignorevoffset     = true,
+  verbose           = true,
+  hidethumbs        = false,
+  righttoleft       = false
+}
+
+\ProcessKeyOptions[thumbs]
+
+\newcounter{ThumbsPage}
+\setcounter{ThumbsPage}{1}
+\AddToHook{shipout/foreground}{\addtocounter{ThumbsPage}{1}}
+
+\pagecolor{\thepagecolor}
+
+\ifthumbs@ignorehoffset
+  \PackageInfo{thumbs}{%
+    Option ignorehoffset NOT =false:\MessageBreak%
+    hoffset will be ignored.\MessageBreak%
+    To make thumbs regard hoffset\MessageBreak%
+    (for example when using the crop package)\MessageBreak%
+    use option ignorehoffset=false\@gobble}
+  \gdef\th@bmshoffset{0sp}
+\else
+  \PackageInfo{thumbs}{%
+    Option ignorehoffset=false:\MessageBreak%
+    hoffset will be regarded.\MessageBreak%
+    This might move the thumb marks\MessageBreak%
+    horizontally away from the physical paper edge\MessageBreak%
+    (which should be done e.g. when using the crop package)\@gobble}
+  \gdef\th@bmshoffset{\hoffset}
+\fi
+
+\ifthumbs@ignorevoffset
+  \PackageInfo{thumbs}{%
+    Option ignorevoffset NOT =false:\MessageBreak%
+    voffset will be ignored.\MessageBreak%
+    To make thumbs regard voffset\MessageBreak%
+    (for example when using the crop package)\MessageBreak%
+    use option ignorevoffset=false\@gobble}
+  \gdef\th@bmsvoffset{0sp}
+\else
+  \PackageInfo{thumbs}{%
+    Option ignorevoffset=false:\MessageBreak%
+    voffset will be regarded.\MessageBreak%
+    This might move the thumb marks\MessageBreak%
+    vertically away from the physical paper edge\MessageBreak%
+    (which should be done e.g. when using the crop package)\@gobble}
+  \gdef\th@bmsvoffset{\voffset}
+\fi
+
+\gdef\thumbs@empty{\empty}
+\gdef\th@mbs@fr@meinnercolor{\thepagecolor}
+
+\ifx\thumbs@linefill\empty%
+  \gdef\th@mbs@linefill{\hspace*{\fill}}
+\else
+  \def\th@mbstest{line}
+  \ifx\thumbs@linefill\th@mbstest%
+    \gdef\th@mbs@linefill{\hrulefill}
+  \else
+    \def\th@mbstest{dots}
+    \ifx\thumbs@linefill\th@mbstest%
+      \gdef\th@mbs@linefill{\dotfill}
+    \else
+      \PackageError{thumbs}{Option linefill with invalid value}{%
+        Option linefill has value "\thumbs@linefill ".\MessageBreak%
+        Valid values are "" (empty), "line", or "dots".\MessageBreak%
+        "" (empty) will be used now.}
+       \gdef\th@mbs@linefill{\hspace*{\fill}}
+    \fi
+  \fi
+\fi
+
+\newdimen\th@mbwidthx
+
+\newdimen\th@mbheighty% Thumb height y
+\setlength{\th@mbheighty}{\z@}
+
+\newdimen\th@mbposx
+\newdimen\th@mbposy
+\newdimen\th@mbposyA
+\newdimen\th@mbposyB
+\newdimen\th@mbposytop
+\newdimen\th@mbposybottom
+\newdimen\th@mbwidthxtoc
+\newdimen\th@mbwidthtmp
+\newdimen\th@mbsposytocy
+\newdimen\th@mbsposytocyy
+\newdimen\th@mbirulex
+\newdimen\th@mbiruley
+
+\newdimen\th@mbHitO
+\setlength{\th@mbHitO}{\thumbs@oddtxtexdent}
+\newdimen\th@mbHitE
+\setlength{\th@mbHitE}{\thumbs@eventxtindent}
+
+\newdimen\th@mbHimO
+\setlength{\th@mbHimO}{\thumbs@oddmarkexdent}
+\newdimen\th@mbHimE
+\setlength{\th@mbHimE}{\thumbs@evenmarkindent}
+
+\newdimen\th@mbsdistance
+\ifx\thumbs@distance\empty%
+  \setlength{\th@mbsdistance}{1mm}
+\else
+  \setlength{\th@mbsdistance}{\thumbs@distance}
+\fi
+
+\newdimen\th@mbslirplus
+\ifx\thumbs@leftindexruleplus\empty%
+  \setlength{\th@mbslirplus}{\z@}
+\else
+  \setlength{\th@mbslirplus}{\thumbs@leftindexruleplus}
+\fi
+
+\ifthumbs@verbose\else
+  \PackageInfo{thumbs}{%
+    Option verbose=false (or silent=true) found:\MessageBreak%
+    You will lose some information in the log file\@gobble}
+\fi
+
+\newbox\ThumbsBox
+
+\gdef\th@mbs{0}
+\gdef\th@mbsmax{0}
+\gdef\th@umbsperpage{0}% will be set via .aux file
+\gdef\th@umbsperpagecount{0}
+
+\gdef\th@mbtitle{}
+\gdef\th@mbtext{}
+\gdef\th@mbtextcolour{\thepagecolor}
+\gdef\th@mbbackgroundcolour{\thepagecolor}
+\gdef\th@mbcolumn{0}
+
+\gdef\th@mbtextA{}
+\gdef\th@mbtextcolourA{\thepagecolor}
+\gdef\th@mbbackgroundcolourA{\thepagecolor}
+
+\gdef\th@mbprinting{1}
+\gdef\th@mbtoprint{0}
+\gdef\th@mbonpage{0}
+\gdef\th@mbonpagemax{0}
+
+\gdef\th@mbcolumnnew{0}
+
+\gdef\th@mbs@toc@level{}
+\gdef\th@mbs@toc@text{}
+
+\gdef\th@mbmaxwidth{\z@}
+
+\gdef\th@mb@titlelabel{}
+
+\gdef\th@mbstable{0}% number of thumb marks overview tables (edge indexes)
+
+\def\thumbs@zero{0}
+\def\thumbs@one{1}
+\def\thumbs@two{2}
+
+\xdef\th@mbpofffix{-1}% page number offset fix
+
+\IfPackageLoadedTF{crop}{\gdef\th@mbcrop{1}}{\gdef\th@mbcrop{0}}
+\AddToHook{enddocument/info}[kernel/warnings]{%
+  \IfPackageLoadedT{crop}{\ifx\th@mbcrop\thumbs@zero\relax%
+  \PackageError{thumbs}{Package crop loaded *after* package thumbs}{%
+    When package crop shall be used,\MessageBreak%
+    it must be loaded *before* package thumbs,\MessageBreak%
+    but it was loaded *afterwards*!}%
+  \fi}%
+  }
+
+\newcounter{Th@mbTmpA}
+\newcounter{Th@mbTmpB}
+
+\newdimen\th@mbcomprulewidth
+\newdimen\th@mbruleoutside
+\setlength{\th@mbruleoutside}{6cm}
+\setlength{\th@mbcomprulewidth}{\dimexpr\th@mbwidthx+\th@mbruleoutside\relax}
+
+\if@filesw\else
+  \PackageWarningNoLine{thumbs}{No auxiliary files allowed!\MessageBreak%
+    It was not allowed to write to files.\MessageBreak%
+    A lot of packages do not work without access to files\MessageBreak%
+    like the .aux one. The thumbs package needs to write\MessageBreak%
+    to the \jobname.tmb file. To exit press\MessageBreak%
+    Ctrl+Z\MessageBreak%
+    .\MessageBreak}
+\fi
+
+\newcommand{\th@mb@txtBox}[4]{%
+  \setlength{\th@mbwidthtmp}{#4}%
+  \ifthumbs@txtcentered%
+    \addtolength{\th@mbwidthtmp}{3pt}%
+    \ifodd\c@Th@mbTmpA\relax%
+      \hspace*{+\th@mbHitO}%
+    \else%
+      \if@twoside%
+        \hspace*{-\th@mbHitE}%
+      \else%
+        \hspace*{+\th@mbHitO}%
+      \fi%
+    \fi%
+  \fi%
+  \parbox[c][\th@mbheighty][c]{\th@mbwidthtmp}{%
+    \settowidth{\th@mbwidthtmp}{\normalsize{#2}}%
+    \addtolength{\th@mbwidthtmp}{-#4}%
+    \ifthumbs@txtcentered%
+      {\begingroup{\begin{center}{\color{#1}\normalsize{#2}}\end{center}}\endgroup}%
+    \else%
+      \def\th@mbstest{#3}%
+      \def\th@mbstestb{r}%
+      \ifx\th@mbstest\th@mbstestb%
+         \ifdim\th@mbwidthtmp >0sp\relax\hspace*{-\th@mbwidthtmp}\fi%
+         {\raggedleft\leftskip 0sp minus \textwidth{\hfill\color{#1}\normalsize{#2}}}%
+      \else% \th@mbstest = l
+        {\raggedright{\color{#1}\normalsize{\hspace*{1pt}\space{#2}}}}%
+      \fi%
+    \fi%
+    }%
+  }
+
+\newcommand{\setth@mbheight}{%
+  \setlength{\th@mbheighty}{\z@}%
+  \addtolength{\th@mbheighty}{\headheight}%
+  \addtolength{\th@mbheighty}{\headsep}%
+  \addtolength{\th@mbheighty}{\textheight}%
+  \addtolength{\th@mbheighty}{\footskip}%
+  \setcounter{Th@mbTmpA}{\th@mbsmax}%
+  \ifnum\c@Th@mbTmpA>1\relax%
+    \divide\th@mbheighty\th@mbsmax%
+  \fi%
+  \addtolength{\th@mbheighty}{-\th@mbsdistance}%
+  \addtolength{\th@mbheighty}{-\th@mbsdistance}%
+  }
+
+\AddToHook{begindocument}[start]{%
+  \ifthumbs@ignorehoffset%
+    \gdef\th@bmshoffset{0sp}%
+  \else%
+    \gdef\th@bmshoffset{\hoffset}%
+  \fi%
+  \ifthumbs@ignorevoffset%
+    \gdef\th@bmsvoffset{0sp}%
+  \else%
+    \gdef\th@bmsvoffset{\voffset}%
+  \fi%
+  \xdef\th@mbpaperwidth{\the\paperwidth}%
+  \setlength{\@tempdima}{1pt}%
+  \ifdim \thumbs@minheight < \@tempdima% too small
+    \setlength{\thumbs@minheight}{1pt}%
+  \else%
+    \ifdim \thumbs@minheight = \@tempdima% small, but ok
+    \else%
+      \ifdim \thumbs@minheight > \@tempdima% ok
+      \else%
+        \PackageError{thumbs}{Option minheight has invalid value}{%
+          As value for option minheight please use\MessageBreak%
+          a number and a length unit (e.g. mm, cm, pt)\MessageBreak%
+          and no space between them\MessageBreak%
+          and include this value+unit combination in curly brackets\MessageBreak%
+          (please see the thumbs-example.tex file).\MessageBreak%
+          When pressing Return, minheight will now be set to 47pt.}%
+        \setlength{\thumbs@minheight}{47pt}%
+      \fi%
+    \fi%
+  \fi%
+  \setlength{\@tempdima}{\thumbs@minheight}%
+  \ifx\thumbs@height\empty%
+    \setlength{\th@mbheighty}{\@tempdima}%
+  \else%
+    \def\th@mbstest{auto}%
+    \ifx\thumbs@height\th@mbstest%
+      \setth@mbheight%
+      \ifdim \th@mbheighty < \thumbs@minheight%
+        \PackageWarningNoLine{thumbs}{Thumbs not high enough:\MessageBreak%
+          Option height has value "auto". For \th@mbsmax\space thumbs per page\MessageBreak%
+          this results in a thumb height of \the\th@mbheighty.\MessageBreak%
+          This is lower than the minimal thumb height, \thumbs@minheight,\MessageBreak%
+          therefore another thumbs column will be opened.\MessageBreak%
+          If you do not want this, choose a smaller value\MessageBreak%
+          for option "minheight"%
+        }
+        \setlength{\th@mbheighty}{\z@}%
+        \addtolength{\th@mbheighty}{\@tempdima}% = \thumbs@minheight
+     \fi%
+    \else%
+      \ifthumbs@verbose%
+        \edef\thumbsinfo{\the\th@mbheighty}%
+        \PackageInfo{thumbs}{Now setting thumbs' height to \thumbsinfo}%
+      \fi%
+      \setlength{\th@mbheighty}{\thumbs@height}%
+    \fi%
+  \fi%
+  \newread\@instreamthumb%
+  \ifthumbs@verbose%
+    \message{^^J}%
+    \edef\thumbsinfo{\the\th@mbheighty}%
+    \PackageInfo{thumbs}{************** THUMB dimensions **************\@gobbletwo}%
+    \PackageInfo{thumbs}{The height of the thumb marks is \thumbsinfo\@gobble}%
+  \fi%
+  \ifthumbs@draft%
+    \setlength{\th@mbwidthx}{2pt}%
+  \else%
+    \setlength{\th@mbwidthx}{\paperwidth}%
+    \addtolength{\th@mbwidthx}{-\textwidth}%
+    \divide\th@mbwidthx by 4%
+    \setlength{\@tempdima}{0sp}%
+    \ifx\thumbs@width\empty%
+    \else%
+      \def\th@mbstest{auto}%
+      \ifx\thumbs@width\th@mbstest%
+      \else%
+        \def\th@mbstest{autoauto}%
+        \ifx\thumbs@width\th@mbstest%
+          \@ifundefined{th@mbmaxwidtha}{%
+            \if@filesw%
+              \gdef\th@mbmaxwidtha{0sp}%
+              \setlength{\th@mbwidthx}{\th@mbmaxwidtha}%
+              \AddToHook{enddocument/info}[kernel/warnings]{%
+                \PackageWarningNoLine{thumbs}{%
+                  \string\th@mbmaxwidtha\space undefined.\MessageBreak%
+                  Rerun to get the thumb marks width right%
+                 }%
+              }%
+            \else%
+              \PackageError{thumbs}{You cannot use option autoauto without \jobname.aux file}{%
+                Recompilation should create the .aux file,\MessageBreak%
+                otherwise do not use the autoauto option.}%
+            \fi%
+          }{%\else
+            \setlength{\th@mbwidthx}{\th@mbmaxwidtha}%
+          }%\fi
+        \else%
+          \ifdim \thumbs@width > \@tempdima% OK
+            \setlength{\th@mbwidthx}{\thumbs@width}%
+          \else%
+            \PackageError{thumbs}{Thumbs not wide enough}{%
+              Option width has value "\thumbs@width".\MessageBreak%
+              This is not a valid dimension larger than zero.\MessageBreak%
+              Width will be set automatically.}%
+          \fi%
+        \fi%
+      \fi%
+    \fi%
+  \fi%
+  \ifthumbs@verbose%
+    \edef\thumbsinfo{\the\th@mbwidthx}%
+    \PackageInfo{thumbs}{The width of the thumb marks on the paper is \thumbsinfo\@gobble}%
+    \ifthumbs@draft%
+      \PackageInfo{thumbs}{because thumbs package is in draft mode\@gobble}%
+    \fi%
+  \fi%
+  % Thumb position x \th@mbposx
+  \setlength{\th@mbposx}{\paperwidth}%
+  \addtolength{\th@mbposx}{-\th@mbwidthx}%
+  \ifthumbs@ignorehoffset%
+    \addtolength{\th@mbposx}{-\hoffset}%
+  \fi%
+  \addtolength{\th@mbposx}{1pt}%
+  % Thumb position y \th@mbposy
+  \ifx\thumbs@topthumbmargin\empty%
+    \def\thumbs@topthumbmargin{auto}%
+  \fi%
+  \def\th@mbstest{auto}%
+  \ifx\thumbs@topthumbmargin\th@mbstest%
+    \setlength{\th@mbposy}{1in}%
+    \addtolength{\th@mbposy}{+\topmargin}%
+    \addtolength{\th@mbposy}{-\th@mbsdistance}%
+    \addtolength{\th@mbposy}{+\th@mbheighty}%
+  \else%
+    \setlength{\@tempdima}{-1pt}%
+    \ifdim\thumbs@topthumbmargin > \@tempdima\relax%
+    \else%
+      \PackageWarning{thumbs}{Thumbs column starting too high.\MessageBreak%
+        Option topthumbmargin has value "\thumbs@topthumbmargin ".\MessageBreak%
+        topthumbmargin will be set to -1pt.\MessageBreak%
+       }%
+      \gdef\thumbs@topthumbmargin{-1pt}%
+    \fi%
+    \setlength{\th@mbposy}{\thumbs@topthumbmargin}%
+    \addtolength{\th@mbposy}{-\th@mbsdistance}%
+    \addtolength{\th@mbposy}{+\th@mbheighty}%
+  \fi%
+  \setlength{\th@mbposytop}{\th@mbposy}%
+  \ifthumbs@verbose%
+    \setlength{\@tempdimc}{\th@mbposytop}%
+    \addtolength{\@tempdimc}{-\th@mbheighty}%
+    \addtolength{\@tempdimc}{+\th@mbsdistance}%
+    \edef\thumbsinfo{\the\@tempdimc}%
+    \PackageInfo{thumbs}{The top thumb margin is \thumbsinfo\@gobble}%
+  \fi%
+  % Max. thumb position y \th@mbposybottom
+  \ifx\thumbs@bottomthumbmargin\empty%
+    \gdef\thumbs@bottomthumbmargin{auto}%
+  \fi%
+  \def\th@mbstest{auto}%
+  \ifx\thumbs@bottomthumbmargin\th@mbstest%
+    \setlength{\th@mbposybottom}{1in}%
+    \addtolength{\th@mbposybottom}{+\th@bmsvoffset}%
+    \addtolength{\th@mbposybottom}{+\topmargin}%
+    \addtolength{\th@mbposybottom}{-\th@mbsdistance}%
+    \addtolength{\th@mbposybottom}{+\th@mbheighty}%
+    \addtolength{\th@mbposybottom}{+\headheight}%
+    \addtolength{\th@mbposybottom}{+\headsep}%
+    \addtolength{\th@mbposybottom}{+\textheight}%
+    \addtolength{\th@mbposybottom}{+\footskip}%
+    \addtolength{\th@mbposybottom}{-\th@mbsdistance}%
+    \addtolength{\th@mbposybottom}{-\th@mbheighty}%
+    \IfPackageLoadedT{crop}{\addtolength{\th@mbposybottom}{-\th@bmsvoffset}}%
+  \else%
+    \setlength{\@tempdima}{\paperheight}%
+    \addtolength{\@tempdima}{-\thumbs@bottomthumbmargin}%
+    \addtolength{\@tempdima}{-\th@mbposytop}%
+    \addtolength{\@tempdima}{-\th@mbsdistance}%
+    \addtolength{\@tempdima}{-\th@mbheighty}%
+    \addtolength{\@tempdima}{-\th@mbsdistance}%
+    \IfPackageLoadedT{crop}{\addtolength{\@tempdima}{-\th@bmsvoffset}}%
+    \ifdim \@tempdima > 0sp\relax%
+    \else%
+      \setlength{\@tempdima}{\paperheight}%
+      \addtolength{\@tempdima}{-\th@mbposytop}%
+      \addtolength{\@tempdima}{-\th@mbsdistance}%
+      \addtolength{\@tempdima}{-\th@mbheighty}%
+      \addtolength{\@tempdima}{-\th@mbsdistance}%
+      \addtolength{\@tempdima}{-1pt}%
+      \IfPackageLoadedT{crop}{\addtolength{\@tempdima}{-\th@bmsvoffset}}%
+      \PackageWarning{thumbs}{Thumbs column ending too high.\MessageBreak%
+        Option bottomthumbmargin has value "\thumbs@bottomthumbmargin ".\MessageBreak%
+        bottomthumbmargin will be set to "\the\@tempdima".\MessageBreak%
+       }%
+      \xdef\thumbs@bottomthumbmargin{\the\@tempdima}%
+    \fi%
+    \setlength{\@tempdima}{\thumbs@bottomthumbmargin}%
+    \setlength{\@tempdimc}{-1pt}%
+    \ifdim \@tempdima < \@tempdimc%
+      \PackageWarning{thumbs}{Thumbs column ending too low.\MessageBreak%
+        Option bottomthumbmargin has value "\thumbs@bottomthumbmargin ".\MessageBreak%
+        bottomthumbmargin will be set to -1pt.\MessageBreak%
+       }%
+      \gdef\thumbs@bottomthumbmargin{-1pt}%
+    \fi%
+    \setlength{\th@mbposybottom}{\paperheight}%
+    \addtolength{\th@mbposybottom}{-\thumbs@bottomthumbmargin}%
+  \fi%
+  \ifthumbs@verbose%
+    \setlength{\@tempdimc}{\paperheight}%
+    \addtolength{\@tempdimc}{-\th@mbposybottom}%
+    \edef\thumbsinfo{\the\@tempdimc}%
+    \PackageInfo{thumbs}{The bottom thumb margin is \thumbsinfo\@gobble}%
+    \PackageInfo{thumbs}{**********************************************\@gobbletwo}%
+    \message{^^J}%
+  \fi%
+  \addtolength{\th@mbposy}{-\th@mbheighty}% because it will be advanced also for the first thumb.
+  \setlength{\th@mbposyA}{\th@mbposy}%      \th@mbposyA will change.
+  \setlength{\th@mbsposytocyy}{\th@mbposy}% \th@mbsposytocyy shall not be changed.
+  }
+
+\newcommand{\th@mb@dvance}{%
+  \addtolength{\th@mbposy}{+\th@mbheighty}%
+  \addtolength{\th@mbposy}{+\th@mbsdistance}%
+  \ifdim\th@mbposy>\th@mbposybottom\relax%
+    \addtolength{\th@mbposy}{-\th@mbheighty}%
+    \addtolength{\th@mbposy}{-\th@mbsdistance}%
+  \else%
+    \addtolength{\th@mbposy}{-\th@mbheighty}%
+    \addtolength{\th@mbposy}{-\th@mbsdistance}%
+    \thumborigaddthumb{}{}{\string\thepagecolor}{\string\thepagecolor}%
+    \th@mb@dvance%
+  \fi%
+  }
+
+\newcommand{\thumbnewcolumn}{%
+  \ifx\th@mbtoprint\thumbs@one\relax%
+    \PackageError{thumbs}{\string\thumbnewcolumn\space after \string\addthumb }{%
+      On page \thepage\space (approx.) \string\addthumb\space was used and *afterwards* %
+      \string\thumbnewcolumn .\MessageBreak%
+      When you want to use \string\thumbnewcolumn , do not use an \string\addthumb\space %
+      on the same\MessageBreak%
+      page before \string\thumbnewcolumn . Thus, either remove the \string\addthumb , %
+      or use a\MessageBreak%
+      \string\pagebreak , \string\newpage\space etc. before \string\thumbnewcolumn .\MessageBreak%
+      (And remember to use an \string\addthumb\space*after* \string\thumbnewcolumn .)\MessageBreak%
+      Your command \string\thumbnewcolumn\space will be ignored now.%
+      }%
+  \else%
+    \PackageWarning{thumbs}{%
+      Starting of another column requested by command\MessageBreak%
+      \string\thumbnewcolumn.\space Only use this command directly\MessageBreak%
+      before an \string\addthumb\space - did you?!\MessageBreak%
+      Code}%
+    \gdef\th@mbcolumnnew{1}%
+    \th@mb@dvance%
+    \gdef\th@mbprinting{0}%
+    \gdef\th@mbcolumnnew{2}%
+  \fi%
+  }
+
+\newcommand{\addtitlethumb}[5]{%
+  \xdef\th@mb@titlelabel{#5}%
+  \addthumb{#1}{#2}{#3}{#4}%
+  \xdef\th@mb@titlelabel{}%
+  }
+
+\gdef\th@mbsphantom{1}
+
+\newcommand{\thumbsnophantom}{\gdef\th@mbsphantom{0}}
+
+\newcommand{\addthumb}[4]{%
+  \gdef\th@mbs@fr@meinnercolor{\thumbs@frameinnercolor}%
+  \gdef\th@mbprinting{1}%
+  \addtolength{\th@mbposy}{\th@mbheighty}%
+  \addtolength{\th@mbposy}{\th@mbsdistance}%
+  \ifdim\th@mbposy>\th@mbposybottom%
+    \PackageInfo{thumbs}{Thumbs column full, starting another column\MessageBreak}%
+    \setlength{\th@mbposy}{\th@mbposytop}%
+    \addtolength{\th@mbposy}{\th@mbsdistance}%
+    \ifx\th@mbcolumn\thumbs@zero\relax%
+      \xdef\th@umbsperpagecount{\th@mbs}%
+      \gdef\th@mbcolumn{1}%
+    \fi%
+  \fi%
+  \setcounter{Th@mbTmpA}{\th@mbs}%
+  \addtocounter{Th@mbTmpA}{1}%
+  \xdef\th@mbs{\the\c@Th@mbTmpA}%
+  \gdef\th@mbtitle{#1}%
+  \gdef\th@mbtext{#2}%
+  \gdef\th@mbtextcolour{#3}%
+  \gdef\th@mbbackgroundcolour{#4}%
+  \settowidth{\@tempdima}{\th@mbtext}%
+  \ifdim\th@mbHitO>\th@mbHitE\relax%
+    \addtolength{\@tempdima}{\th@mbHitO}%
+  \else%
+    \addtolength{\@tempdima}{\th@mbHitE}%
+  \fi%
+  \ifdim\@tempdima>\th@mbmaxwidth%
+    \xdef\th@mbmaxwidth{\the\@tempdima}%
+  \fi%
+  \ifdim\@tempdima>\th@mbwidthx%
+    \ifthumbs@draft% \relax
+    \else%
+      \edef\thumbsinfoa{\the\th@mbwidthx}
+      \edef\thumbsinfob{\the\@tempdima}
+      \PackageWarning{thumbs}{%
+        Thumb mark on paper too small (width: \thumbsinfoa )\MessageBreak%
+        or its text too wide (width:%
+        \space\space\space\space\space\space\space\space\space\space%
+        \thumbsinfob )\MessageBreak%
+       }%
+    \fi%
+  \fi%
+  \IfPackageLoadedT{hyperref}{%
+    \ifthumbs@nophantomsection%
+    \else%
+      \ifx\th@mbsphantom\thumbs@one\relax%
+        \phantomsection%
+      \else%
+        \gdef\th@mbsphantom{1}%
+      \fi%
+    \fi%
+  }%
+  \label{thumbs.\th@mbs}%
+  \if@filesw%
+    \ifx\th@mb@titlelabel\empty%
+      \addtocontents{tmb}{\string\thumbcontents{#1}{#2}{#3}{#4}{\thepage}{thumbs.\th@mbs}{\th@mbcolumnnew}\protected@file@percent}%
+    \else%
+      \addtocounter{page}{-1}%
+      \edef\th@mb@page{\thepage}%
+      \addtocontents{tmb}{\string\thumbcontents{#1}{#2}{#3}{#4}{\th@mb@page}{\th@mb@titlelabel}{\th@mbcolumnnew}\protected@file@percent}%
+      \addtocounter{page}{+1}%
+    \fi%
+ %\else there is a problem, but the according warning message was already given earlier.
+  \fi%
+  \ifx\th@mbcolumnnew\thumbs@one\relax%
+  \else%
+    \setcounter{Th@mbTmpA}{\th@mbonpage}%
+    \addtocounter{Th@mbTmpA}{1}%
+    \xdef\th@mbonpage{\the\c@Th@mbTmpA}%
+  \fi%
+  \ifx\th@mbtoprint\thumbs@zero\relax%
+  \else%
+    \ifx\th@mbcolumnnew\thumbs@zero\relax%
+      \PackageWarning{thumbs}{More than 1 thumb at 1 page:\MessageBreak%
+        You placed more than 1 thumb mark (at least \th@mbonpage )\MessageBreak%
+        on page \thepage\space (page is approximately).\MessageBreak%
+        Maybe you want to insert a page break here?\MessageBreak%
+        Thumb added}%
+    \fi%
+  \fi%
+  \ifnum\th@mbonpage=1%
+    \ifnum\th@mbonpagemax>0% \relax
+    \else \gdef\th@mbonpagemax{1}%
+    \fi%
+    \gdef\th@mbtextA{#2}%
+    \gdef\th@mbtextcolourA{#3}%
+    \gdef\th@mbbackgroundcolourA{#4}%
+    \setlength{\th@mbposyA}{\th@mbposy}%
+  \else%
+    \ifx\th@mbcolumnnew\thumbs@zero\relax%
+      \setcounter{Th@mbTmpA}{\the\c@Th@mbTmpA}%
+      \@tempcnta=1\relax%
+      \edef\th@mbonpagetest{\the\@tempcnta}%
+      \@whilenum\th@mbonpagetest<\th@mbonpage\do{%
+       \advance\@tempcnta by 1%
+       \xdef\th@mbonpagetest{\the\@tempcnta}%
+       \ifnum\th@mbonpage=\th@mbonpagetest%
+         \ifnum\th@mbonpagemax<\th@mbonpage%
+           \xdef\th@mbonpagemax{\th@mbonpage}%
+         \fi%
+         \edef\th@mbtmpdef{\csname th@mbtext\AlphAlph{\the\@tempcnta}\endcsname}%
+         \expandafter\gdef\th@mbtmpdef{#2}%
+         \edef\th@mbtmpdef{\csname th@mbtextcolour\AlphAlph{\the\@tempcnta}\endcsname}%
+         \expandafter\gdef\th@mbtmpdef{#3}%
+         \edef\th@mbtmpdef{\csname th@mbbackgroundcolour\AlphAlph{\the\@tempcnta}\endcsname}%
+         \expandafter\gdef\th@mbtmpdef{#4}%
+       \fi%
+      }%
+      \@tempcnta=\the\c@Th@mbTmpA\relax%
+    \else%
+      \ifnum\th@mbonpagemax<\th@mbonpage%
+        \xdef\th@mbonpagemax{\th@mbonpage}%
+      \fi%
+    \fi%
+  \fi%
+  \ifx\th@mbcolumnnew\thumbs@two\relax%
+    \gdef\th@mbcolumnnew{0}%
+  \fi%
+  \gdef\th@mbtoprint{1}%
+  }
+
+\newcommand{\stopthumb}{\gdef\th@mbprinting{0}}
+
+\newcommand{\continuethumb}{\gdef\th@mbprinting{1}}
+
+\newcommand{\th@mbtabrule}{%
+  \rule{\dimexpr\th@mbwidthxtoc+\th@mbruleoutside\relax}{\th@mbheighty}%
+  \ifx\thumbs@frame\thumbs@empty\relax%
+  \else%
+    \hspace*{-\th@mbwidthxtoc}%
+    \hspace*{\thumbs@frame}%
+    \setlength{\th@mbwidthtmp}{\th@mbwidthxtoc}%
+    \addtolength{\th@mbwidthtmp}{-\thumbs@frame}%
+    \addtolength{\th@mbwidthtmp}{-\thumbs@frame}%
+    \xdef\th@mbfrw{\the\th@mbwidthtmp}%
+    \setlength{\th@mbwidthtmp}{\th@mbheighty}%
+    \addtolength{\th@mbwidthtmp}{-\thumbs@frame}%
+    \addtolength{\th@mbwidthtmp}{-\thumbs@frame}%
+    {\color{\thumbs@frameinnercolor}%
+     \rule[\thumbs@frame]{\th@mbfrw}{\th@mbwidthtmp}%
+    }%
+    \hspace*{\thumbs@frame}%
+  \fi%
+  }
+
+\newenvironment{thumbspicture}[1][]{\gdef\thumbs@picture@option{#1}\thumbs@picture@parse}{\end{picture}}
+
+\def\thumbs@picture@parse(#1){%
+  \IfDocumentMetadataTF{\expanded{\noexpand\begin{picture}[\thumbs@picture@option]}(#1)%
+  }{\begin{picture}(#1)}%
+}
+
+\newcommand{\thumbcontents}[7]{%
+  \addtolength{\th@mbposy}{\th@mbheighty}%
+  \addtolength{\th@mbposy}{\th@mbsdistance}%
+  \ifdim\th@mbposy>\th@mbposybottom%
+    \setlength{\th@mbposy}{\th@mbposytop}%
+    \addtolength{\th@mbposy}{\th@mbsdistance}%
+  \fi%
+  \def\th@mb@tmp@title{#1}%
+  \def\th@mb@tmp@text{#2}%
+  \def\th@mb@tmp@textcolour{#3}%
+  \def\th@mb@tmp@backgroundcolour{#4}%
+  \def\th@mb@tmp@page{#5}%
+  \def\th@mb@tmp@label{#6}%
+  \def\th@mb@tmp@column{#7}%
+  \ifx\th@mb@tmp@column\thumbs@two\relax%
+    \def\th@mb@tmp@column{0}%
+  \fi%
+  \setlength{\th@mbwidthxtoc}{\paperwidth}%
+  \addtolength{\th@mbwidthxtoc}{-1in}%
+  \def\th@mbstest{r}%
+  \ifx\th@mbstest\th@mbsprintpage% right page
+    \addtolength{\th@mbwidthxtoc}{-\th@mbHimO}%
+    \addtolength{\th@mbwidthxtoc}{-\oddsidemargin}%
+    \setlength{\@tempdimc}{1in}%
+    \addtolength{\@tempdimc}{+\oddsidemargin}%
+  \else% left page
+    \addtolength{\th@mbwidthxtoc}{-\th@mbHimE}%
+    \addtolength{\th@mbwidthxtoc}{-\evensidemargin}%
+    \setlength{\@tempdimc}{\th@bmshoffset}%
+    \addtolength{\@tempdimc}{-\hoffset}
+  \fi%
+  \setlength{\th@mbposyB}{-\th@mbposy}%
+  \if@twoside%
+    \setcounter{Th@mbTmpA}{\the\c@ThumbsPage}%
+    \addtocounter{Th@mbTmpA}{\th@mbpofffix}%
+    \ifodd\c@Th@mbTmpA\relax%
+    \else%
+      \addtolength{\th@mbposyB}{-\thumbs@evenprintvoffset}%
+    \fi%
+  \fi%
+  \def\th@mbstest{l}%
+  \ifx\th@mbstest\th@mbsprintpage% left page
+    \addtolength{\@tempdimc}{+\th@mbHimE}%
+    \setlength{\@tempdimb}{0em}%
+  \else% right page
+    \setlength{\@tempdimb}{1em}%
+  \fi%
+  \addtolength{\@tempdimc}{-\@tempdimb}%
+  \addtolength{\th@mbwidthxtoc}{\@tempdimb}%
+  \put(\@tempdimc,\th@mbposyB){%
+    \ifx\th@mbstest\th@mbsprintpage% left page
+      \ifdim\evensidemargin <0sp\relax%
+        \addtolength{\th@mbwidthxtoc}{-\evensidemargin}%
+        \ifthumbs@righttoleft\addtolength{\th@mbwidthxtoc}{-\evensidemargin}\fi%
+      \else% >=0sp
+        \addtolength{\th@mbwidthxtoc}{+\evensidemargin}%
+        \ifthumbs@righttoleft\addtolength{\th@mbwidthxtoc}{+\evensidemargin}\fi%
+      \fi%
+      \addtolength{\th@mbwidthxtoc}{\th@mbslirplus}%
+    \fi%
+    \begin{thumbspicture}[artifact](\@tempdimb,0)%
+      \ifx\th@mbstest\th@mbsprintpage% left page
+        \def\th@mbruleoutsidecor{\th@mbruleoutside}%
+        \hspace*{-\th@mbruleoutsidecor}%
+      \else% right page
+        \def\th@mbruleoutsidecor{0sp}%
+      \fi%
+      \ifthumbs@plainthumbsoverview\relax%
+        \def\th@mb@tmp@backgroundcolour{\thepagecolor}%
+      \fi%
+      \def\th@mbstest{rule}%
+      \ifx\thumbs@thumblink\th@mbstest%
+        \ifx\th@mb@tmp@column\thumbs@zero\relax%
+         {\color{\th@mb@tmp@backgroundcolour}%
+          \rlap{\th@mbtabrule}%
+          \hspace*{\th@mbruleoutsidecor}%
+          \hyperref[\th@mb@tmp@label]{\phantom{\rule{\th@mbwidthxtoc}{\th@mbheighty}}}%
+         }%
+        \else%
+          \phantom{{\color{\th@mb@tmp@backgroundcolour}\th@mbtabrule}}%
+        \fi%
+      \else%
+        {\color{\th@mb@tmp@backgroundcolour}\th@mbtabrule}%
+      \fi%
+    \end{thumbspicture}%
+    \ifx\th@mbstest\th@mbsprintpage% l
+      \ifdim\evensidemargin <0sp\relax%
+        \addtolength{\th@mbwidthxtoc}{+\evensidemargin}%
+      \else% >=0sp
+        \addtolength{\th@mbwidthxtoc}{-\evensidemargin}%
+      \fi%
+    \fi%
+    \ifx\th@mb@tmp@column\thumbs@zero\relax%
+      \setlength{\th@mbwidthxtoc}{\paperwidth}%
+      \addtolength{\th@mbwidthxtoc}{-1in}%
+      \IfPackageLoadedF{crop}{\addtolength{\th@mbwidthxtoc}{-\hoffset}}%
+      \ifx\th@mbstest\th@mbsprintpage% l
+        \addtolength{\th@mbwidthxtoc}{-\evensidemargin}%
+      \else%
+        \addtolength{\th@mbwidthxtoc}{-\oddsidemargin}%
+      \fi%
+      \setlength{\@tempdima}{\th@mbwidthx}%
+      \setlength{\@tempdimc}{\th@mbmaxwidtha}%
+      \ifdim\@tempdima>\@tempdimc\relax%
+        \addtolength{\th@mbwidthxtoc}{-\th@mbwidthx}%
+      \else%
+        \addtolength{\th@mbwidthxtoc}{-\th@mbmaxwidtha}%
+      \fi%
+      \addtolength{\th@mbwidthxtoc}{-1em}%
+      \addtolength{\th@mbwidthxtoc}{-20pt}%
+      \ifdim\th@mbwidthxtoc>\textwidth%
+        \setlength{\th@mbwidthxtoc}{\textwidth}%
+      \fi%
+      \ifx\th@mbstest\th@mbsprintpage% left page
+        \ifthumbs@plainthumbsoverview\relax%
+          \begin{thumbspicture}[artifact](0,0)%
+            {\color{\th@mb@tmp@backgroundcolour}\rule{\th@mbwidthx}{\th@mbheighty}}%
+          \end{thumbspicture}%
+        \fi%
+        \begin{thumbspicture}[artifact](-\th@mbHimE,0)(-6pt,-0.5\th@mbheighty+384930sp)%
+          \bgroup%
+            \setlength{\parindent}{0sp}%
+            \setlength{\@tempdimc}{\th@mbwidthx}%
+            \addtolength{\@tempdimc}{-\th@mbHitO}%
+            \setlength{\@tempdimb}{\th@mbwidthx}%
+            \addtolength{\@tempdimb}{-\th@mbHitE}%
+            \setcounter{Th@mbTmpA}{\c@ThumbsPage}%
+            \addtocounter{Th@mbTmpA}{\th@mbpofffix}%
+            \ifodd\c@Th@mbTmpA\relax%
+              \hspace*{-\th@mbHitO}%
+              \th@mb@txtBox{\th@mb@tmp@textcolour}{\protect\th@mb@tmp@text}{r}{\@tempdimc}%
+            \else%
+              \if@twoside%
+                \hspace*{+\th@mbHitE}%
+                \th@mb@txtBox{\th@mb@tmp@textcolour}{\protect\th@mb@tmp@text}{l}{\@tempdimb}%
+              \else%
+                \hspace*{-\th@mbHitO}%
+                \th@mb@txtBox{\th@mb@tmp@textcolour}{\protect\th@mb@tmp@text}{r}{\@tempdimc}%
+              \fi%
+            \fi%
+          \egroup%
+        \end{thumbspicture}%
+        \setlength{\@tempdimc}{-1in}%
+        \addtolength{\@tempdimc}{-\evensidemargin}%
+      \else% right page
+        \setlength{\@tempdimc}{0sp}%
+      \fi%
+      \begin{thumbspicture}[artifact](0,0)(\@tempdimc,-0.5\th@mbheighty+384930sp)%
+        \bgroup%
+          \ifthumbs@plainthumbsoverview\relax%
+            \def\th@mb@tmp@textcolour{.}%
+          \fi%
+          \setlength{\parindent}{0sp}%
+          \vbox%
+           {\hsize=\th@mbwidthxtoc {%
+              \def\th@mbstest{none}%
+              \ifx\thumbs@thumblink\th@mbstest%
+                {\color{\th@mb@tmp@textcolour}\noindent \th@mb@tmp@title%
+                 \leaders\box \ThumbsBox {\th@mbs@linefill \th@mb@tmp@page}%
+                }%
+              \else%
+                \def\th@mbstest{title}%
+                \ifx\thumbs@thumblink\th@mbstest%
+                  {\color{\th@mb@tmp@textcolour}\noindent%
+                   \hyperref[\th@mb@tmp@label]{\th@mb@tmp@title}%
+                   \leaders\box \ThumbsBox {\th@mbs@linefill \th@mb@tmp@page}%
+                  }%
+                \else%
+                  \def\th@mbstest{page}%
+                  \ifx\thumbs@thumblink\th@mbstest%
+                    {\color{\th@mb@tmp@textcolour}\noindent%
+                     \th@mb@tmp@title%
+                     \leaders\box \ThumbsBox {\th@mbs@linefill \pageref{\th@mb@tmp@label}}%
+                    }%
+                  \else%
+                    \def\th@mbstest{titleandpage}%
+                    \ifx\thumbs@thumblink\th@mbstest%
+                      {\color{\th@mb@tmp@textcolour}\noindent%
+                       \hyperref[\th@mb@tmp@label]{\th@mb@tmp@title}%
+                       \leaders\box \ThumbsBox {\th@mbs@linefill \pageref{\th@mb@tmp@label}}%
+                      }%
+                    \else%
+                      \def\th@mbstest{line}%
+                      \ifx\thumbs@thumblink\th@mbstest%
+                        {\color{\th@mb@tmp@textcolour}\noindent%
+                         \hyperref[\th@mb@tmp@label]{\th@mb@tmp@title%
+                         \leaders\box \ThumbsBox {\th@mbs@linefill \th@mb@tmp@page}}%
+                        }%
+                      \else%
+                        \def\th@mbstest{rule}%
+                        \ifx\thumbs@thumblink\th@mbstest%
+                          {\color{\th@mb@tmp@textcolour}\noindent%
+                           \th@mb@tmp@title%
+                           \leaders\box \ThumbsBox {\th@mbs@linefill \th@mb@tmp@page}%
+                          }%
+                        \else%
+                          \PackageError{thumbs}{\string\thumbs@thumblink\space invalid}{%
+                            \string\thumbs@thumblink\space has an invalid value,\MessageBreak%
+                            although it did not have an invalid value before,\MessageBreak%
+                            and the thumbs package did not change it.\MessageBreak%
+                            Therefore some other package (or the user)\MessageBreak%
+                            manipulated it.\MessageBreak%
+                            Now setting it to "none" as last resort.%
+                            }%
+                          \gdef\thumbs@thumblink{none}%
+                          {\color{\th@mb@tmp@textcolour}\noindent%
+                           \th@mb@tmp@title%
+                           \leaders\box \ThumbsBox {\th@mbs@linefill \th@mb@tmp@page}%
+                          }%
+                        \fi%
+                      \fi%
+                    \fi%
+                  \fi%
+                \fi%
+              \fi%
+             }%
+           }%
+        \egroup%
+      \end{thumbspicture}%
+      \ifx\th@mbstest\th@mbsprintpage% left page: relax.
+      \else% right page
+        \ifthumbs@plainthumbsoverview\relax%
+          \begin{thumbspicture}[artifact](0,0)(1in+\oddsidemargin-\th@mbxpos,0)%
+            {\color{\th@mb@tmp@backgroundcolour}\rule{\dimexpr\th@mbwidthx+10pt\relax}{\th@mbheighty}}%
+          \end{thumbspicture}%
+        \fi%
+        \begin{thumbspicture}[artifact](0,0)(1in+\oddsidemargin-\th@mbxpos,-0.5\th@mbheighty+384930sp)%
+          \bgroup%
+            \setlength{\parindent}{0sp}%
+            \setlength{\@tempdimc}{\th@mbwidthx}%
+            \addtolength{\@tempdimc}{-\th@mbHitO}%
+            \setlength{\@tempdimb}{\th@mbwidthx}%
+            \addtolength{\@tempdimb}{-\th@mbHitE}%
+            \setcounter{Th@mbTmpA}{\c@ThumbsPage}%
+            \addtocounter{Th@mbTmpA}{\th@mbpofffix}%
+            \ifodd\c@Th@mbTmpA\relax%
+              \hspace*{-\th@mbHitO}%
+              \th@mb@txtBox{\th@mb@tmp@textcolour}{\protect\th@mb@tmp@text}{r}{\@tempdimc}%
+            \else%
+              \if@twoside%
+                \hspace*{+\th@mbHitE}%
+                \th@mb@txtBox{\th@mb@tmp@textcolour}{\protect\th@mb@tmp@text}{l}{\@tempdimb}%
+              \else%
+                \hspace*{-\th@mbHitO}%
+                \th@mb@txtBox{\th@mb@tmp@textcolour}{\protect\th@mb@tmp@text}{r}{\@tempdimc}%
+              \fi%
+            \fi%
+          \egroup%
+        \end{thumbspicture}%
+      \fi%
+    \fi%
+    }%
+  }
+
+\newcommand{\th@mb@yA}{%
+  \addtolength{\th@mbposyA}{\th@mbheighty}%
+  \addtolength{\th@mbposyA}{\th@mbsdistance}%
+  \ifdim\th@mbposyA>\th@mbposybottom%
+    \PackageWarning{thumbs}{You are not only using more than one thumb mark at one\MessageBreak%
+      single page, but also thumb marks from different thumb\MessageBreak%
+      columns. May I suggest the use of a \string\pagebreak\space or\MessageBreak%
+      \string\newpage ?%
+     }%
+    \setlength{\th@mbposyA}{\th@mbposytop}%
+  \fi%
+  }
+
+\newcommand{\th@mbprint}[3]{%
+  \setlength{\th@mbposyB}{-\th@mbposyA}%
+  \addtolength{\th@mbwidthx}{+10pt}%
+  \if@twoside%
+    \setcounter{Th@mbTmpA}{\c@ThumbsPage}%
+    \addtocounter{Th@mbTmpA}{\th@mbpofffix}%
+    \ifodd\c@Th@mbTmpA\relax% right page
+      \put(\th@mbxpos,\th@mbposyB){%
+        \begin{thumbspicture}[artifact](0,0)%
+          {\color{#3}\rule{\th@mbcomprulewidth}{\th@mbheighty}}%
+        \end{thumbspicture}%
+       }%
+    \else% left page
+      \setlength{\@tempdimc}{-\th@mbposyA}%
+      \addtolength{\@tempdimc}{-\thumbs@evenprintvoffset}%
+      \setlength{\th@mbposyB}{\@tempdimc}%
+      \put(\th@mbxpos-10pt-\th@mbruleoutside+\th@mbwidthx,\th@mbposyB){%
+        \begin{thumbspicture}[artifact](0,0)%
+          {\color{#3}\rule{\th@mbcomprulewidth}{\th@mbheighty}}%
+        \end{thumbspicture}%
+       }%
+    \fi%
+  \else% one-sided, right page
+    \put(\th@mbxpos,\th@mbposyB){%
+      \begin{thumbspicture}[artifact](0,0)%
+        {\color{#3}\rule{\th@mbcomprulewidth}{\th@mbheighty}}%
+      \end{thumbspicture}%
+     }%
+  \fi%
+  \addtolength{\th@mbwidthx}{-10pt}%
+  \ifx\thumbs@frame\thumbs@empty\relax%
+  \else%
+    \setlength{\th@mbiruley}{\th@mbheighty}%
+    \addtolength{\th@mbiruley}{-\thumbs@frame}%
+    \addtolength{\th@mbiruley}{-\thumbs@frame}%
+    \setlength{\th@mbirulex}{\th@mbwidthx}%
+    \addtolength{\th@mbirulex}{-\thumbs@frame}%
+    \addtolength{\th@mbirulex}{-\thumbs@frame}%
+    \setlength{\th@mbwidthtmp}{\thumbs@frame}%
+    \ifdim \th@mbxpos > 0sp\relax%
+      \addtolength{\th@mbwidthtmp}{+\th@mbxpos}%
+      \addtolength{\th@mbirulex}{+\paperwidth}%
+      \addtolength{\th@mbirulex}{-\th@mbxpos}%
+      \addtolength{\th@mbirulex}{-\th@mbwidthx}%
+    \else%
+      \addtolength{\th@mbwidthtmp}{-\th@mbxpos}%
+      \addtolength{\th@mbirulex}{+\th@mbxpos}%
+    \fi%
+    \addtolength{\th@mbirulex}{-1pt}%
+    \put(\th@mbwidthtmp,\th@mbposyB+\thumbs@frame){%
+      \begin{thumbspicture}[artifact](0,0)%
+        {\color{\th@mbs@fr@meinnercolor}\rule{\th@mbirulex}{\th@mbiruley}}%
+      \end{thumbspicture}%
+     }%
+  \fi%
+  \put(\th@mbxpos,\th@mbposyB){%
+    \begin{thumbspicture}[artifact](0,0)(0,-0.5\th@mbheighty+384930sp)%
+      \bgroup%
+        \setlength{\parindent}{0sp}%
+        \setlength{\@tempdimc}{\th@mbwidthx}%
+        \addtolength{\@tempdimc}{-\th@mbHitO}%
+        \setlength{\@tempdimb}{\th@mbwidthx}%
+        \addtolength{\@tempdimb}{-\th@mbHitE}%
+        \setcounter{Th@mbTmpA}{\c@ThumbsPage}%
+        \addtocounter{Th@mbTmpA}{\th@mbpofffix}%
+        \ifodd\c@Th@mbTmpA\relax%
+          \hspace*{-\th@mbHitO}%
+          \th@mb@txtBox{#2}{#1}{r}{\@tempdimc}%
+        \else%
+          \if@twoside%
+            \hspace*{+\th@mbHitE}%
+            \th@mb@txtBox{#2}{#1}{l}{\@tempdimb}%
+          \else%
+            \hspace*{-\th@mbHitO}%
+            \th@mb@txtBox{#2}{#1}{r}{\@tempdimc}%
+          \fi%
+        \fi%
+      \egroup%
+    \end{thumbspicture}%
+   }%
+  }
+
+\AddToHook{shipout/before}{%
+  \ifx\th@mbcolumnnew\thumbs@zero\relax% OK
+  \else%
+    \PackageError{thumbs}{Missing \string\addthumb\space after \string\thumbnewcolumn }{%
+      Command \string\thumbnewcolumn\space was used, but no new thumb placed with \string\addthumb\MessageBreak%
+      (at least not at the same page). After \string\thumbnewcolumn\space please always use an\MessageBreak%
+      \string\addthumb . Until the next \string\addthumb , there will be no thumb marks on the\MessageBreak%
+      pages. Starting a new column of thumb marks and not putting a thumb mark into\MessageBreak%
+      that column does not make sense. If you just want to get rid of column marks,\MessageBreak%
+      do not abuse \string\thumbnewcolumn\space but use \string\stopthumb .\MessageBreak%
+      (This error message will be repeated at all following pages,\MessageBreak%
+      \space until \string\addthumb\space is used.)%
+      }%
+  \fi%
+  \setcounter{Th@mbTmpA}{\c@ThumbsPage}%
+  \addtocounter{Th@mbTmpA}{\th@mbpofffix}%
+  \edef\th@mbstmpwidth{\the\paperwidth}%
+  \ifdim\th@mbpaperwidth=\th@mbstmpwidth% OK
+  \else%
+    \PackageWarningNoLine{thumbs}{Paperwidth has changed. Thumb mark positions become now adapted}%
+    \setlength{\th@mbposx}{\paperwidth}%
+    \addtolength{\th@mbposx}{-\th@mbwidthx}%
+    \ifthumbs@ignorehoffset%
+      \addtolength{\th@mbposx}{-\hoffset}%
+    \fi%
+    \addtolength{\th@mbposx}{+1pt}%
+    \xdef\th@mbpaperwidth{\the\paperwidth}%
+  \fi%
+  \edef\th@mbxpos{\the\th@mbposx}%
+  \ifodd\c@Th@mbTmpA\relax%
+  \else%
+    \if@twoside%
+      \ifthumbs@ignorehoffset%
+         \setlength{\@tempdimc}{-\hoffset}%
+         \addtolength{\@tempdimc}{-1pt}%
+         \edef\th@mbxpos{\the\@tempdimc}%
+      \else%
+        \def\th@mbxpos{-1pt}%
+      \fi%
+    \fi%
+  \fi%
+  \setlength{\@tempdimc}{\th@mbxpos}%
+  \if@twoside%
+    \ifodd\c@Th@mbTmpA\relax%
+          \addtolength{\@tempdimc}{-\th@mbHimO}%
+    \else \addtolength{\@tempdimc}{+\th@mbHimE}%
+    \fi%
+  \else \addtolength{\@tempdimc}{-\th@mbHimO}%
+  \fi%
+  \edef\th@mbxpos{\the\@tempdimc}%
+  \@expl@@@shipout@add@foreground@picture@@n{%
+    \ifx\th@mbprinting\thumbs@one\relax%
+      \th@mbprint{\th@mbtextA}{\th@mbtextcolourA}{\th@mbbackgroundcolourA}%
+      \setcounter{Th@mbTmpB}{1}%
+      \edef\th@mbonpagetest{\the\c@Th@mbTmpB}%
+      \@whilenum\th@mbonpagetest<\th@mbonpage\do{%
+        \addtocounter{Th@mbTmpB}{1}%
+        \edef\th@mbonpagetest{\the\c@Th@mbTmpB}%
+        \th@mb@yA%
+        \def\Th@mbTmpDefText{\csname th@mbtext\AlphAlph{\the\c@Th@mbTmpB}\endcsname}%
+        \def\Th@mbTmpDefColour{\csname th@mbtextcolour\AlphAlph{\the\c@Th@mbTmpB}\endcsname}%
+        \def\Th@mbTmpDefBackgroundColour{\csname th@mbbackgroundcolour\AlphAlph{\the\c@Th@mbTmpB}\endcsname}%
+        \th@mbprint{\Th@mbTmpDefText}{\Th@mbTmpDefColour}{\Th@mbTmpDefBackgroundColour}%
+      }%
+    \fi%
+    \setcounter{Th@mbTmpB}{\th@mbonpage}%
+    \ifnum\c@Th@mbTmpB<2\relax%
+    \else%
+      \gdef\th@mbtextA{\th@mbtext}%
+      \gdef\th@mbtextcolourA{\th@mbtextcolour}%
+      \gdef\th@mbbackgroundcolourA{\th@mbbackgroundcolour}%
+      \gdef\th@mbposyA{\th@mbposy}%
+    \fi%
+    \gdef\th@mbonpage{0}%
+    \gdef\th@mbtoprint{0}%
+    }%
+  }
+
+\AddToHook{enddocument/afterlastpage}{%
+  \ifx\th@mbcolumnnew\thumbs@zero\relax% OK
+  \else%
+    \PackageWarningNoLine{thumbs}{%
+      Still missing \string\addthumb\space after \string\thumbnewcolumn\space after\MessageBreak%
+      last ship-out: Command \string\thumbnewcolumn\space was used,\MessageBreak%
+      but no new thumb placed with \string\addthumb\space anywhere in the\MessageBreak%
+      rest of the document. Starting a new column of thumb\MessageBreak%
+      marks and not putting a thumb mark into that column\MessageBreak%
+      does not make sense. If you just want to get rid of\MessageBreak%
+      thumb marks, do not abuse \string\thumbnewcolumn\space but use\MessageBreak%
+      \string\stopthumb %
+     }%
+  \fi%
+  \ifx\th@mbcolumn\thumbs@zero\relax% if there is only one column of thumbs
+    \xdef\th@umbsperpagecount{\th@mbs}%
+    \gdef\th@mbcolumn{1}%
+  \fi%
+  \ifx\th@umbsperpagecount\thumbs@zero\relax%
+    \gdef\th@umbsperpagecount{\th@mbs}% \th@mbs was increased with each \addthumb
+  \fi%
+  \ifdim\th@mbmaxwidth>\th@mbwidthx%
+    \ifthumbs@draft% \relax
+    \else%
+      \def\th@mbstest{autoauto}%
+      \ifx\thumbs@width\th@mbstest%
+        \AddToHook{enddocument/info}{%
+          \PackageWarningNoLine{thumbs}{Rerun to get the thumb marks width right}%
+         }%
+      \else%
+        \AddToHook{enddocument/info}{%
+          \edef\thumbsinfoa{\th@mbmaxwidth}%
+          \edef\thumbsinfob{\the\th@mbwidthx}%
+          \PackageWarningNoLine{thumbs}{%
+            Thumb mark too small or its text too wide:\MessageBreak%
+            The widest thumb mark text is \thumbsinfoa\space wide,\MessageBreak%
+            but the thumb marks are only \space\thumbsinfob\space wide.\MessageBreak%
+            Either shorten or scale down the text,\MessageBreak%
+            or increase the thumb mark width,\MessageBreak%
+            or use option width=autoauto%
+           }%
+         }%
+      \fi%
+    \fi%
+  \fi%
+  \if@filesw%
+    \immediate\write\@auxout{\string\gdef\string\th@mbmaxwidtha{\th@mbmaxwidth}}%
+    \immediate\write\@auxout{\string\gdef\string\th@umbsperpage{\th@umbsperpagecount}}%
+    \immediate\write\@auxout{\string\gdef\string\th@mbsmax{\th@mbs}}%
+    \expandafter\newwrite\csname tf@tmb\endcsname%
+    \RerunFileCheck{\jobname.tmb}{\immediate\closeout \csname tf@tmb\endcsname}{%
+      Warning: Rerun to get list of thumbs right!}%
+    \immediate\openout \csname tf@tmb\endcsname = \jobname.tmb\relax%
+ %\else there is a problem, but the according warning message was already given earlier.
+  \fi%
+  }
+
+\newcommand{\addthumbsoverviewtocontents}[2]{%
+  \gdef\th@mbs@toc@level{#1}%
+  \gdef\th@mbs@toc@text{#2}%
+  }
+
+\newcommand{\clearotherdoublepage}{%
+\clearpage\if@twoside\ifodd\c@page% removed "\else" from \cleardoublepage
+\hbox{}\newpage\if@twocolumn\hbox{}\newpage\fi\fi\fi%
+}
+
+\newcommand{\th@mbstablabeling}{%
+  \IfPackageLoadedT{hyperref}{\phantomsection}%
+  \let\label\thumbsoriglabel%
+  \ifx\th@mbstable\thumbs@one\relax%
+    \label{TableOfThumbs}%
+    \label{TableOfThumbs1}%
+  \else%
+    \overridelabel{TableOfThumbs}%
+    \label{TableOfThumbs\th@mbstable}%
+  \fi%
+  \let\label\@gobble%
+  \ifx\th@mbs@toc@level\empty%\relax
+  \else \addcontentsline{toc}{\th@mbs@toc@level}{\th@mbs@toc@text}%
+  \fi%
+  }
+
+\newcommand{\thumbsoverview}[1]{%
+  \ifthumbs@righttoleft\thumbsoverviewprint{#1}{l}%
+  \else\thumbsoverviewprint{#1}{r}%
+  \fi%
+  }
+
+\newcommand{\thumbsoverviewback}[1]{%
+  \if@twoside%
+  \else%
+    \PackageWarning{thumbs}{\string\thumbsoverviewback\space%
+      used in a one-sided document.\MessageBreak%
+      Maybe you want to use \string\thumbsoverview\space instead?\MessageBreak%
+      Code}%
+  \fi%
+  \ifthumbs@righttoleft\thumbsoverviewprint{#1}{r}%
+  \else\thumbsoverviewprint{#1}{l}%
+  \fi%
+  }
+
+\newcommand{\thumbsoverviewverso}[1]{%
+  \if@twoside%
+  \else%
+    \PackageWarning{thumbs}{\string\thumbsoverviewverso\space%
+      used in a one-sided document.\MessageBreak%
+      Maybe you want to use \string\thumbsoverview\space instead?\MessageBreak%
+      Code}%
+  \fi%
+  \ifthumbs@righttoleft\thumbsoverviewprint{#1}{d}%
+  \else\thumbsoverviewprint{#1}{v}%
+  \fi%
+  }
+
+\newcommand{\thumbsoverviewdouble}[1]{%
+  \if@twoside%
+  \else%
+    \PackageWarning{thumbs}{\string\thumbsoverviewdouble\space%
+      used in a one-sided document.\MessageBreak%
+      Maybe you want to use \string\thumbsoverview\space instead?\MessageBreak%
+      Code}%
+  \fi%
+  \ifthumbs@righttoleft\thumbsoverviewprint{#1}{v}%
+  \else\thumbsoverviewprint{#1}{d}%
+  \fi%
+  }
+
+\newcommand{\thumbsoverviewprint}[2]{%
+  \edef\th@mbstest{#2}%
+  \def\th@mbstestb{r}%
+  \ifx\th@mbstest\th@mbstestb% right
+    \gdef\th@mbsprintpage{r}%
+  \else%
+    \def\th@mbstestb{l}%
+    \ifx\th@mbstest\th@mbstestb% left
+      \gdef\th@mbsprintpage{l}%
+    \else%
+      \def\th@mbstestb{v}%
+      \ifx\th@mbstest\th@mbstestb% verso
+        \gdef\th@mbsprintpage{v}%
+      \else%
+        \def\th@mbstestb{d}%
+        \ifx\th@mbstest\th@mbstestb% double
+          \gdef\th@mbsprintpage{d}%
+        \else%
+          \PackageError{thumbs}{Invalid second parameter of \string\thumbsoverviewprint }{%
+            The second argument of command \string\thumbsoverviewprint\space must be\MessageBreak%
+            either "r" or "l" or "v" or "d" but it is neither.\MessageBreak%
+            Now "r" is chosen instead ("l" for right-to-left writing).}%
+          \ifthumbs@righttoleft\gdef\th@mbsprintpage{l}%
+          \else\gdef\th@mbsprintpage{r}%
+          \fi%
+        \fi%
+      \fi%
+    \fi%
+  \fi%
+  \def\th@mbstest{none}%
+  \ifx\thumbs@thumblink\th@mbstest% OK
+  \else%
+    \IfPackageLoadedTF{hyperref}{% hyperref loaded
+      \def\th@mbstest{title}%
+      \ifx\thumbs@thumblink\th@mbstest% OK
+      \else%
+        \def\th@mbstest{page}%
+        \ifx\thumbs@thumblink\th@mbstest% OK
+        \else%
+          \def\th@mbstest{titleandpage}%
+          \ifx\thumbs@thumblink\th@mbstest% OK
+          \else%
+            \def\th@mbstest{line}%
+            \ifx\thumbs@thumblink\th@mbstest% OK
+            \else%
+              \def\th@mbstest{rule}%
+              \ifx\thumbs@thumblink\th@mbstest% OK
+              \else%
+                \PackageError{thumbs}{Option thumblink with invalid value}{%
+                  Option thumblink has invalid value "\thumbs@thumblink ".\MessageBreak%
+                  Valid values are "none", "title", "page",\MessageBreak%
+                  "titleandpage", "line", or "rule".\MessageBreak%
+                  "rule" will be used now.}%
+                \gdef\thumbs@thumblink{rule}%
+              \fi%
+            \fi%
+          \fi%
+        \fi%
+      \fi%
+    }{% hyperref not loaded
+      \PackageError{thumbs}{Option thumblink not "none", but hyperref not loaded}{%
+        The option thumblink of the thumbs package was not set to "none",\MessageBreak%
+        but to some kind of hyperlinks, without using package hyperref.\MessageBreak%
+        Either choose option "thumblink=none", or load package hyperref.\MessageBreak%
+        When pressing Return, "thumblink=none" will be set now.}%
+      \gdef\thumbs@thumblink{none}%
+     }%
+  \fi%
+  \edef\th@mbprintingovertoc{\th@mbprinting}%
+  \ifnum \th@mbsmax > \thumbs@zero\relax%
+    \if@twoside%
+      \def\th@mbstest{r}% right
+      \ifx\th@mbstest\th@mbsprintpage%
+        \ifthumbs@righttoleft\clearotherdoublepage%
+        \else\cleardoublepage%
+        \fi%
+      \else%
+        \def\th@mbstest{v}% verso
+        \ifx\th@mbstest\th@mbsprintpage%
+          \ifthumbs@righttoleft\clearotherdoublepage%
+          \else\cleardoublepage%
+          \fi%
+        \else% l(eft) or d(ouble)
+          \ifthumbs@righttoleft\cleardoublepage%
+          \else\clearotherdoublepage%
+          \fi%
+        \fi%
+      \fi%
+    \else\clearpage%
+    \fi%
+    \stopthumb%
+    \PackageInfo{thumbs}{If you get an error "Runaway argument? \string\MakeUppercases"\MessageBreak%
+      you probably forgot the argument for a\MessageBreak%
+      \string\thumbsoverview/back/verso/double\space command}%
+    \markboth{\MakeUppercase{#1}}{\MakeUppercase{#1}}%
+  \fi%
+  \setlength{\th@mbsposytocy}{\th@mbposy}%
+  \setlength{\th@mbposy}{\th@mbsposytocyy}%
+  \ifx\th@mbstable\thumbs@zero\relax%
+    \newcounter{th@mblinea}%
+    \newcounter{th@mblineb}%
+    \newcounter{FileLine}%
+    \newcounter{thumbsstop}%
+  \fi%
+  \setcounter{th@mblinea}{\th@mbstable}%
+  \addtocounter{th@mblinea}{+1}%
+  \xdef\th@mbstable{\number\value{th@mblinea}}%
+  \setcounter{th@mblinea}{1}%
+  \setcounter{th@mblineb}{\th@umbsperpage}%
+  \setcounter{FileLine}{1}%
+  \setcounter{thumbsstop}{1}%
+  \addtocounter{thumbsstop}{\th@mbsmax}%
+  \let\thumbsoriglabel\label%
+  \let\thumbsorigindex\index%
+  \let\thumbsorigglossary\glossary%
+  \let\label\@gobble%
+  \let\index\@gobble%
+  \let\glossary\@gobble%
+  \def\th@mbstest{v}% right left right ...
+  \ifx\th@mbstest\th@mbsprintpage%
+    \def\th@mbsprintpage{l}% because it will be changed to r(ight)
+    \def\th@mbdoublepage{1}%
+  \else%
+    \def\th@mbstest{d}% left right left ...
+    \ifx\th@mbstest\th@mbsprintpage%
+      \def\th@mbsprintpage{r}% because it will be changed to l(eft)
+      \def\th@mbdoublepage{1}%
+    \else%
+      \def\th@mbdoublepage{0}%
+    \fi%
+  \fi%
+  \def\th@mb@resetdoublepage{0}%
+  \@whilenum\value{FileLine}<\value{thumbsstop}\do%
+   {\ifx\th@mbdoublepage\thumbs@one\relax%
+      \def\th@mbstest{r}% right
+      \ifx\th@mbsprintpage\th@mbstest%
+        \def\th@mbsprintpage{l}% left
+      \else% \th@mbsprintpage is l(eft)
+        \def\th@mbsprintpage{r}% right
+      \fi%
+      \clearpage%
+      \ifx\th@mb@resetdoublepage\thumbs@one\relax%
+        \setcounter{th@mblinea}{\theth@mblinea}%
+        \setcounter{th@mblineb}{\theth@mblineb}%
+        \def\th@mb@resetdoublepage{0}%
+      \else%
+        \edef\theth@mblinea{\number\value{th@mblinea}}%
+        \edef\theth@mblineb{\number\value{th@mblineb}}%
+        \def\th@mb@resetdoublepage{1}%
+      \fi%
+    \else%
+      \if@twoside%
+        \def\th@mbstest{r}% right
+        \ifx\th@mbstest\th@mbsprintpage%
+          \ifthumbs@righttoleft\clearotherdoublepage%
+          \else\cleardoublepage%
+          \fi%
+        \else% l(eft)
+          \ifthumbs@righttoleft\cleardoublepage%
+          \else\clearotherdoublepage%
+          \fi%
+        \fi%
+      \else\clearpage%
+      \fi%
+    \fi%
+    \ifnum\value{FileLine}=1\relax%
+      \ifx\th@mbdoublepage\thumbs@one\relax%
+        \ifx\th@mb@resetdoublepage\thumbs@one\relax%
+          \th@mbstablabeling%
+        \fi%
+      \else%
+        \th@mbstablabeling%
+      \fi%
+    \fi%
+    \null%
+    \th@mbs@verview%
+    \pagebreak%
+    \ifthumbs@verbose%
+      \message{THUMBS: Fileline: \number\value{FileLine}, a: \number\value{th@mblinea}, %
+        b: \number\value{th@mblineb}, per page: \th@umbsperpage, max: \th@mbsmax.^^J}%
+    \fi%
+    \ifx\th@mb@resetdoublepage\thumbs@one\relax%
+      \setcounter{FileLine}{\theth@mblinea}%
+    \fi%
+   }%
+  \setlength{\th@mbposy}{\th@mbsposytocy}%
+  \ifx\th@mbprintingovertoc\thumbs@one\relax%
+    \continuethumb%
+  \fi%
+  \let\label\thumbsoriglabel%
+  \let\index\thumbsorigindex%
+  \let\glossary\thumbsorigglossary%
+  \addthumbsoverviewtocontents{}{}%
+  }
+
+\newcommand{\th@mbs@verview}{%
+  \AddToHookNext{shipout/before}{%
+    \@expl@@@shipout@add@foreground@picture@@n{%
+      \IfFileExists{\jobname.tmb}{% then
+        \ifthumbs@verbose%
+          \message{^^JPackage thumbs Info: Processing line \number\value{th@mblinea} to \number\value{th@mblineb} of \jobname.tmb.^^J}%
+        \fi%
+        \setcounter{FileLine}{1}%
+        \openin\@instreamthumb=\jobname.tmb%
+          \@whilenum\value{FileLine}<\value{th@mblineb}\do%
+           {\ifthumbs@verbose%
+              \message{THUMBS: Processing \jobname.tmb line \number\value{FileLine}.}%
+            \fi%
+            \ifnum \value{FileLine}<\value{th@mblinea}\relax%
+              \read\@instreamthumb to \@unused%
+              \ifthumbs@verbose\message{Can be skipped.^^J}\fi%
+              % NIRVANA: ignore the line by not executing it, i.e. not executing \@unused.
+              % % \@unused
+            \else%
+              \ifnum \value{FileLine}=\value{th@mblinea}\relax%
+                \read\@instreamthumb to \@thumbsout% execute the code of this line
+                \ifthumbs@verbose%
+                  \message{Executing \jobname.tmb line \number\value{FileLine}.^^J}%
+                \fi%
+                \@thumbsout%
+              \else%
+                \ifnum \value{FileLine}>\value{th@mblinea}\relax%
+                  \read\@instreamthumb to \@thumbsout% execute the code of this line
+                  \ifthumbs@verbose%
+                    \message{Executing \jobname.tmb line \number\value{FileLine}.^^J}%
+                  \fi%
+                  \@thumbsout%
+                \else% THIS SHOULD NEVER HAPPEN!
+                  \PackageError{thumbs}{Unexpected error! (Really!)}{%
+                    ! You are in trouble here.\MessageBreak%
+                    ! Type\space \space X \string<Return\string>\space to quit.\MessageBreak%
+                    ! Delete temporary auxiliary files\MessageBreak%
+                    ! (like \jobname.aux, \jobname.tmb, \jobname.out)\MessageBreak%
+                    ! and retry the compilation.\MessageBreak%
+                    ! If the error persists, cross your fingers\MessageBreak%
+                    ! and try typing\space \space \string<Return\string>\space to proceed.\MessageBreak%
+                    ! If that does not work,\MessageBreak%
+                    ! please contact the maintainer of the thumbs package.\MessageBreak%
+                    }%
+                \fi%
+              \fi%
+            \fi%
+            \stepcounter{FileLine}%
+           }%
+          \ifnum \value{FileLine}=\value{th@mblineb}\relax%
+            \ifthumbs@verbose%
+              \message{THUMBS: Processing \jobname.tmb line \number\value{FileLine}.}%
+            \fi%
+            \read\@instreamthumb to \@thumbsout% Execute the code of that line.
+            \ifthumbs@verbose%
+              \message{Executing \jobname.tmb line \number\value{FileLine}.^^J}%
+            \fi%
+            \@thumbsout%
+            \stepcounter{FileLine}%
+          \fi%
+        \closein\@instreamthumb%
+        \addtocounter{th@mblinea}{\th@umbsperpage}%
+        \addtocounter{th@mblineb}{\th@umbsperpage}%
+        \setcounter{Th@mbTmpA}{\th@mbsmax}%
+        \ifnum\value{th@mblineb}>\c@Th@mbTmpA\relax%
+          \setcounter{th@mblineb}{\c@Th@mbTmpA}%
+        \fi%
+      }{% else
+        \setcounter{FileLine}{\number\value{thumbsstop}}%
+        \AddToHook{enddocument/info}[kernel/warnings]{%
+          \PackageWarningNoLine{thumbs}{%
+            File \jobname.tmb not found.\MessageBreak%
+            Rerun to get thumbs overview page(s) right.%
+           }%
+         }%
+       }%
+      }%
+    }%
+  }
+
+\let\thumborigaddthumb\addthumb%
+
+\ifthumbs@draft
+  \setlength{\th@mbwidthx}{2pt}
+  \renewcommand{\addthumb}[4]{\thumborigaddthumb{#1}{#2}{black}{gray}}
+  \PackageWarningNoLine{thumbs}{thumbs package in draft mode:\MessageBreak%
+    Thumb mark width is set to 2pt,\MessageBreak%
+    thumb mark text colour to black, and\MessageBreak%
+    thumb mark background colour to gray.\MessageBreak%
+    Use package option final to get the original values.\MessageBreak%
+   }
+\fi
+
+\ifthumbs@hidethumbs
+  \renewcommand{\addthumb}[4]{\relax}
+  \PackageWarningNoLine{thumbs}{thumbs package in hide mode:\MessageBreak%
+    Thumb marks are hidden.\MessageBreak%
+    Set package option "hidethumbs=false" to get thumb marks%
+   }
+  \renewcommand{\thumbnewcolumn}{\relax}
+\fi
+
+\AddToHook{begindocument}[start]{%
+  \AtBeginDvi{%
+    \if@twoside%
+      \ifodd\c@ThumbsPage\relax%
+        \xdef\th@mbpofffix{0}%
+      \else%
+        \xdef\th@mbpofffix{1}%
+      \fi%
+    \else%
+      \xdef\th@mbpofffix{0}%
+    \fi%
+    \ifthumbs@righttoleft%
+      \setcounter{Th@mbTmpA}{\numexpr\th@mbpofffix+1\relax}%
+      \xdef\th@mbpofffix{\number\value{Th@mbTmpA}}%
+    \fi%
+    \if@filesw%
+      \immediate\write\@auxout{\string\xdef\string\th@mbpofffix{\th@mbpofffix}}%
+    \fi%
+    }%
+  }
+\endinput
+%%
+%% End of file `thumbs.sty'.
