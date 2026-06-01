@@ -1,13 +1,72 @@
-\chapter{Second test chapter}
+% Chapter 2 — Methods
+%
+% Demonstrates: \autoref for cross-referencing, full-width booktabs
+% table with tabularx, TikZ flowchart, siunitx for units, and
+% further aligned equations.
+
+\chapter{Methods}
 \addthumb{Chapter 2}{\thechapter}{white}{thesisblue}
 \clearpage
 
-\section{Methods}
-\lipsum[7]
+\section{Figures and cross-referencing}
 
-The overall processing pipeline, including a \ac{qc} step, is illustrated in Figure~\ref{fig:ch2-flow}.
+Figures are placed in a \texttt{figure} float.
+Always supply a \verb|\label| so you can cross-reference elsewhere.
+Use \verb|\autoref{label}| (from \texttt{hyperref}) for automatically
+typed references such as ``\autoref{fig:ch2-setup}'', or plain
+\verb|\ref| if you want only the number.
 
-\begin{figure}
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.55\linewidth]{example-image-a}
+  \caption{Placeholder figure demonstrating a typical experimental
+           setup. Describe the layout, label any panels~(a),~(b),
+           and state all units.}
+  \label{fig:ch2-setup}
+\end{figure}
+
+\lipsum[1-2]
+
+\section{Tables}
+
+Use \texttt{booktabs} (no vertical rules, spaced horizontal rules)
+together with \texttt{tabularx} to span the full text width.
+The \texttt{X} column absorbs the remaining space; numeric columns
+stay centred at their natural width.
+\autoref{tab:ch2-methods} compares three placeholder methods.
+
+\begin{table}[t]
+  \centering
+  \caption{Comparison of three placeholder methods across performance
+           and computational-cost metrics~\cite{lecun1998}.
+           Higher accuracy and \ac{roc}-AUC are better;
+           lower runtime is preferred.}
+  \label{tab:ch2-methods}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{Xcccc}
+    \toprule
+    & \multicolumn{2}{c}{\textbf{Performance}}
+    & \multicolumn{2}{c}{\textbf{Computational cost}} \\
+    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
+    \textbf{Method}
+      & \textbf{Accuracy (\%)} & \textbf{ROC-AUC}
+      & \textbf{Runtime (s)}   & \textbf{Memory (MB)} \\
+    \midrule
+    Baseline  & 72.3 & 0.81 & 0.4 & 128 \\
+    Proposed  & 88.1 & 0.93 & 1.2 & 256 \\
+    Reference & 85.6 & 0.90 & 2.8 & 512 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\section{Diagrams with TikZ}
+
+Flowcharts and processing pipelines can be drawn directly in \LaTeX{}
+using the \texttt{tikz} package (\autoref{fig:ch2-flow}).
+This avoids raster artefacts and keeps diagrams typographically
+consistent with the surrounding text.
+
+\begin{figure}[t]
   \centering
   \resizebox{\linewidth}{!}{%
   \begin{tikzpicture}[
@@ -21,9 +80,9 @@ The overall processing pipeline, including a \ac{qc} step, is illustrated in Fig
       arr/.style     = {-Stealth, semithick},
     ]
     \node[box]      (input)  {Data input};
-    \node[box,      right=of input]   (proc)   {Preprocessing};
-    \node[decision, right=of proc]    (qc)     {QC passed?};
-    \node[box,      right=of qc]      (output) {Analysis \& output};
+    \node[box,      right=of input]  (proc)   {Preprocessing};
+    \node[decision, right=of proc]   (qc)     {\ac{qc} passed?};
+    \node[box,      right=of qc]     (output) {Analysis \& output};
 
     \draw[arr] (input)  -- (proc);
     \draw[arr] (proc)   -- (qc);
@@ -32,16 +91,46 @@ The overall processing pipeline, including a \ac{qc} step, is illustrated in Fig
                node[below, font=\footnotesize, pos=0.25]{no} (proc.south);
   \end{tikzpicture}%
   }
-  \caption{Schematic overview of the data processing pipeline. Samples that
-           fail the \ac{qc} check are returned to the preprocessing step.}
+  \caption{Schematic of the data-processing pipeline.
+           Samples that fail the \ac{qc} step are returned to
+           preprocessing~\cite{vaswani2017}.}
   \label{fig:ch2-flow}
 \end{figure}
 
-The total energy of the system is obtained by integrating the spectral density
-over all frequencies~\cite{brown2021, smith2020}:
+\section{Further equations and units}
+
+The cross-entropy loss for a $K$-class classifier is
+
 \begin{equation}
-  E = \int_0^{\infty} S(f)\, df.
+  \mathcal{L}(\boldsymbol{\theta}) =
+  -\frac{1}{N}\sum_{i=1}^{N}
+    \sum_{k=1}^{K} y_{ik}\,\log\hat{p}_{ik}(\boldsymbol{\theta}),
+  \label{eq:ch2-crossentropy}
 \end{equation}
+
+where $y_{ik} \in \{0,1\}$ is the ground-truth label and
+$\hat{p}_{ik}$ is the predicted probability for class~$k$.
+Minimising~\eqref{eq:ch2-crossentropy} via stochastic gradient
+descent gives the update rule
+
+\begin{align}
+  \boldsymbol{\theta}^{(t+1)}
+    &= \boldsymbol{\theta}^{(t)}
+       - \eta\,\nabla_{\!\boldsymbol{\theta}}\,
+         \mathcal{L}\!\left(\boldsymbol{\theta}^{(t)}\right),
+       \label{eq:ch2-sgd} \\
+  \eta_{t}
+    &= \eta_{0}\cdot\gamma^{\lfloor t/s \rfloor},
+       \label{eq:ch2-lr}
+\end{align}
+
+where $\eta_{0}$ is the initial learning rate, $\gamma < 1$ is the
+decay factor, and $s$ is the step size~\cite{lecun1998}.
+
+Use the \texttt{siunitx} package for physical quantities and units.
+For example, the experiment ran for \SI{72}{\hour} on a GPU with
+\SI{40}{\giga\byte} of memory, achieving an accuracy of
+\SI{88.1}{\percent} after \num{50000} gradient steps.
 
 \lipsum[9]
 

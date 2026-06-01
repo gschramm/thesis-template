@@ -1,13 +1,92 @@
-\chapter{Third test chapter}
+% Chapter 3 — Results and general conclusion
+%
+% Demonstrates: equations with cross-references to earlier chapters,
+% itemize / enumerate / description lists, siunitx for reporting
+% results with units, and a closing contributions summary.
+
+\chapter{Results and general conclusion}
 \addthumb{Chapter 3}{\thechapter}{white}{thesisblue}
 \clearpage
 
-\section{Methods}
-The preprocessing pipeline follows the approach described in~\cite{chen2018}.
-\Ac{roc} curves are used to evaluate classifier performance at varying thresholds.
-\lipsum[7-8]
+\section{Results}
 
-\section{Results and discussion}
-\lipsum[10-12]
+\lipsum[10]
+
+The empirical \ac{cdf} of the residual-error distribution is
+
+\begin{equation}
+  \hat{F}(x) = \frac{1}{N}\sum_{i=1}^{N} \mathbf{1}[x_{i} \leq x],
+  \label{eq:ch3-ecdf}
+\end{equation}
+
+where $\mathbf{1}[\cdot]$ is the indicator function.
+Under the Gaussian assumption, \eqref{eq:ch3-ecdf} converges to the
+closed-form expression
+
+\begin{equation}
+  F(x;\mu,\sigma) = \frac{1}{2}\left[
+    1 + \operatorname{erf}\!\left(
+      \frac{x - \mu}{\sigma\sqrt{2}}
+    \right)
+  \right],
+  \label{eq:ch3-gaussian-cdf}
+\end{equation}
+
+with mean $\mu$ and standard deviation $\sigma$~\cite{bishop2006}.
+
+The key quantitative results are:
+
+\begin{itemize}
+  \item The proposed method (\autoref{tab:ch2-methods}) achieved a
+        \SI{15.8}{\percent} improvement in accuracy over the
+        baseline.
+  \item The \ac{snr} increased from \SI{12}{\decibel} to
+        \SI{18}{\decibel} after preprocessing
+        (see \autoref{fig:ch2-flow}).
+  \item Runtime remained within the real-time budget of
+        \SI{2}{\second} per sample on all test cases.
+  \item The area under the \ac{roc} curve reached \num{0.93},
+        compared with \num{0.81} for the baseline.
+\end{itemize}
+
+\section{Discussion}
+
+\lipsum[11]
+
+The theoretical guarantee behind~\eqref{eq:ch3-gaussian-cdf}
+requires the following conditions to hold:
+
+\begin{enumerate}
+  \item Samples are drawn i.i.d.\ from a stationary distribution.
+  \item The noise process is ergodic and zero-mean.
+  \item The estimator is asymptotically unbiased and
+        consistent~\cite{hochreiter1997}.
+\end{enumerate}
+
+\lipsum[12]
+
+The learning-rate schedule in~\eqref{eq:ch2-lr} was found to reduce
+the training loss by a factor of \num{3.2} compared with a fixed
+rate, consistent with the findings of~\cite{hochreiter1997}.
+
+\section{General conclusion}
+
+\lipsum[4]
+
+The main contributions of this dissertation are:
+
+\begin{description}
+  \item[Contribution 1] Short description of the first original
+    contribution — one to three sentences.
+  \item[Contribution 2] Short description of the second original
+    contribution — one to three sentences.
+  \item[Contribution 3] Short description of the third original
+    contribution — one to three sentences.
+\end{description}
+
+Future work should address the limitations of the \ac{ml} pipeline
+and extend the framework to multi-site datasets.
+
+\lipsum[5]
 
 \printbibliography[heading=subbibliography, title={References}]

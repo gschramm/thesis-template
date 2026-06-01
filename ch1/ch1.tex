@@ -1,63 +1,118 @@
-% Images in this chapter: use filenames relative to this folder.
-% e.g. \includegraphics{ch1/my-figure} (path from main.tex)
-% or set \graphicspath{{ch1/}} at the top of this file for bare filenames.
+% Chapter 1 — Introduction and mathematical background
+%
+% Demonstrates: inline math, displayed equations, aligned multi-line
+% equations, equation references with \eqref, piecewise (cases),
+% matrix–vector notation, acronyms, figures, and citations.
 
-\chapter{General introduction and dissertation outline}
+\chapter{Introduction and mathematical background}
 \addthumb{Introduction}{\thechapter}{white}{thesisblue}
 \clearpage
 
-\section{Some math}
-
-The convolution of two functions $f$ and $g$ is defined as
-\begin{equation}
-  (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\, g(t - \tau)\, d\tau,
-\end{equation}
-which appears frequently in signal processing and probability theory.
-The \ac{snr} of the recovered signal depends directly on the chosen kernel.
+\section{Motivation and thesis outline}
 
 \lipsum[1]
 
-
-\section{Background}
-
-\lipsum[1]
-
-An overview of the experimental setup is shown in Figure~\ref{fig:ch1-setup}. \lipsum[2]
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.35\linewidth]{example-image}
-  \caption{Placeholder figure caption. Describe what the figure shows, including
-           relevant panel labels (a), (b), units, and any abbreviations used.}
-  \label{fig:ch1-setup}
-\end{figure}
+The performance of a detection algorithm is typically assessed using
+the \ac{roc} curve, which plots the true-positive rate against the
+false-positive rate as the decision threshold varies~\cite{bishop2006}.
+A central design goal in many \ac{ml} pipelines is to maximise the
+\ac{snr} of the processed signal so that downstream classifiers
+operate on clean features~\cite{shannon1948}.
 
 \lipsum[2]
 
-A quantitative comparison of the three main approaches is given in
-Table~\ref{tab:ch1-methods}, grouped by performance metrics and computational
-cost~\cite{smith2020, doe2019}.
+\section{Inline and displayed equations}
 
-\lipsum[3]
+Inline mathematics is enclosed in dollar signs, e.g.\ the energy
+$E = mc^{2}$ or the Euler identity $e^{i\pi} + 1 = 0$.
+For important standalone results, use a numbered displayed equation:
 
-\begin{table}
+\begin{equation}
+  (f * g)(t) = \int_{-\infty}^{\infty} f(\tau)\, g(t - \tau)\, d\tau.
+  \label{eq:ch1-convolution}
+\end{equation}
+
+The convolution in~\eqref{eq:ch1-convolution} appears throughout
+signal processing and probability theory.
+Cross-reference equations with \verb|\eqref|, which automatically adds
+parentheses.
+
+\section{Aligned multi-line equations}
+
+Use the \texttt{align} environment when a derivation spans several
+lines and you want the equals signs to line up.
+Each line receives its own label; suppress unwanted labels with
+\verb|\notag|.
+
+\begin{align}
+  \hat{f}(\xi) &= \int_{-\infty}^{\infty} f(t)\,
+                   e^{-2\pi i \xi t}\, dt,
+                   \label{eq:ch1-fourier-fwd} \\
+  f(t)         &= \int_{-\infty}^{\infty} \hat{f}(\xi)\,
+                   e^{+2\pi i \xi t}\, d\xi.
+                   \label{eq:ch1-fourier-inv}
+\end{align}
+
+Equations~\eqref{eq:ch1-fourier-fwd}–\eqref{eq:ch1-fourier-inv}
+form the Fourier transform pair~\cite{shannon1948}.
+A short derivation that needs only one label uses \verb|\notag| on
+intermediate lines:
+
+\begin{align}
+  \|f + g\|^{2}
+    &= \langle f + g,\, f + g \rangle \notag \\
+    &= \|f\|^{2} + 2\operatorname{Re}\langle f, g \rangle
+       + \|g\|^{2} \notag \\
+    &\leq \bigl(\|f\| + \|g\|\bigr)^{2}.
+       \label{eq:ch1-triangle}
+\end{align}
+
+Inequality~\eqref{eq:ch1-triangle} is the triangle inequality in an
+inner-product space.
+
+\section{Piecewise functions and matrix notation}
+
+A piecewise definition uses the \texttt{cases} environment:
+
+\begin{equation}
+  \operatorname{ReLU}(x) =
+  \begin{cases}
+    x & \text{if } x > 0, \\
+    0 & \text{otherwise.}
+  \end{cases}
+  \label{eq:ch1-relu}
+\end{equation}
+
+A fully connected layer applies the linear map in~\eqref{eq:ch1-linear}
+followed by a non-linearity such as~\eqref{eq:ch1-relu}:
+
+\begin{equation}
+  \mathbf{y} = \mathbf{W}\mathbf{x} + \mathbf{b},
+  \qquad
+  \mathbf{W} \in \mathbb{R}^{m \times n},\;
+  \mathbf{x} \in \mathbb{R}^{n},\;
+  \mathbf{b} \in \mathbb{R}^{m}.
+  \label{eq:ch1-linear}
+\end{equation}
+
+\section{Figures}
+
+Every figure must have a caption that fully describes what is shown,
+including panel labels (a), (b), axis units, and any abbreviations.
+Place the \verb|\label| \emph{inside} or immediately after the
+\verb|\caption| so that \verb|\ref| points to the correct number.
+
+\begin{figure}[t]
   \centering
-  \caption{Comparison of three placeholder methods across performance metrics
-           and computational cost. Higher accuracy and F1 score are better;
-           lower runtime and memory usage are preferred.}
-  \label{tab:ch1-methods}
-  \footnotesize
-  \begin{tabularx}{\textwidth}{Xcccc}
-    \toprule
-    & \multicolumn{2}{c}{\textbf{Performance}} & \multicolumn{2}{c}{\textbf{Computational cost}} \\
-    \cmidrule(lr){2-3}\cmidrule(lr){4-5}
-    \textbf{Method} & \textbf{Accuracy (\%)} & \textbf{F1 score} & \textbf{Runtime (s)} & \textbf{Memory (MB)} \\
-    \midrule
-    Baseline  & 72.3 & 0.71 & 0.4 & 128 \\
-    Proposed  & 88.1 & 0.87 & 1.2 & 256 \\
-    Reference & 85.6 & 0.84 & 2.8 & 512 \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
+  \includegraphics[width=0.5\linewidth]{example-image}
+  \caption{Placeholder figure. Describe what is shown here, including
+           any panel labels, axis units, and abbreviations used.
+           Adapted from~\protect\cite{bishop2006}.}
+  \label{fig:ch1-example}
+\end{figure}
+
+An overview of the experimental setup is shown in
+Figure~\ref{fig:ch1-example}.
+\lipsum[3]
 
 \printbibliography[heading=subbibliography, title={References}]
