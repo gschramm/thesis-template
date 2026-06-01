@@ -1,30 +1,77 @@
 \documentclass[10pt,b5paper,twoside,openright]{book}
+
+%---- Thesis metadata (edit these fields) ----------------------------
+\newcommand{\ThesisTitle}{Sample Thesis Title}
+\newcommand{\ThesisSubtitle}{A demonstration of dissertation style}
+\newcommand{\ThesisAuthor}{Your Name}
+\newcommand{\ThesisDegree}{Doctor in Special Science}
+\newcommand{\ThesisFaculty}{My faculty}
+\newcommand{\ThesisInstitution}{My University}
+\newcommand{\ThesisSupervisor}{Prof.\ Supervisor Name}
+\newcommand{\ThesisCoSupervisor}{Prof.\ Co-Supervisor Name}
+\newcommand{\ThesisMonth}{Jan}
+\newcommand{\ThesisYear}{2025}
+%---------------------------------------------------------------------
+
 \input{preamble}
 
 \begin{document}
 
-%---- Front matter (Title page, TOC) --------------------------------
+%---- Front matter (Title page, Abstract, TOC) -----------------------
 \frontmatter
 \pagestyle{plain}
 
 \begin{titlepage}
   \centering
-  \vspace*{4cm}
-  {\Huge\bfseries Sample Thesis Title\par}
-  \vspace{1.5cm}
-  {\Large A demonstration of dissertation style\par}
+  \vspace*{1cm}
+  {\large\scshape\ThesisInstitution\par}
+  \vspace{0.25cm}
+  {\normalsize\ThesisFaculty\par}
+  \vspace{2.5cm}
+  {\Huge\bfseries\ThesisTitle\par}
+  \vspace{1cm}
+  {\Large\ThesisSubtitle\par}
   \vfill
-  {\large Your Name\par}
+  {\large\ThesisAuthor\par}
+  \vspace{1.2cm}
+  {\normalsize
+    Dissertation presented in partial fulfilment of the\\
+    requirements for the degree of \ThesisDegree\par}
+  \vspace{1cm}
+  {\normalsize
+    Supervisor: \ThesisSupervisor\\
+    Co-supervisor: \ThesisCoSupervisor\par}
+  \vspace{1cm}
+  {\normalsize\ThesisMonth\ \ThesisYear\par}
   \vspace{1cm}
 \end{titlepage}
 
 \cleardoublepage
+
+%---- Abstract -------------------------------------------------------
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Write your abstract here. The abstract should concisely summarise the
+motivation, methods, main findings, and conclusions of the dissertation.
+Aim for 300--500 words.
+
+\cleardoublepage
+
+%---- Acknowledgements -----------------------------------------------
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+Write your acknowledgements here. Thank your supervisors, collaborators,
+funding agencies, and anyone else who contributed to the work.
+
+\cleardoublepage
+
 \tableofcontents
 
 \printacronyms
 
-%---- Main matter (Chapters) -------------------------------------
-
+%---- Main matter (Chapters) -----------------------------------------
 \mainmatter
 \pagestyle{fancy}
 
@@ -35,9 +82,9 @@
 
 \stopthumb
 
-%---- Back matter (Lists) -------------------------------------
+%---- Back matter (Lists) --------------------------------------------
 \backmatter
-\listoffigures % not essential
-\listoftables  % not essential
+\listoffigures
+\listoftables
 
 \end{document}

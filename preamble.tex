@@ -29,8 +29,8 @@
 \usepackage{microtype}
 \usepackage[
   hidelinks,
-  pdftitle  = {Sample Thesis Title},
-  pdfauthor = {Your Name},
+  pdftitle  = \ThesisTitle,
+  pdfauthor = \ThesisAuthor,
 ]{hyperref}
 \usepackage[titletoc]{appendix}
 \usepackage{lipsum}
@@ -39,7 +39,7 @@
 \usepackage[
   backend    = biber,
   style      = alphabetic,
-  sorting    = none,
+  sorting    = anyt,
   refsection = chapter,
 ]{biblatex}
 \addbibresource{ch1/ch1.bib}
@@ -93,12 +93,10 @@
   \fancyhf{}%
   \fancyhead[LE]{\small\textcolor{headergray}{\leftmark}}%   left-aligned on left pages
   \fancyhead[RO]{\small\textcolor{headergray}{\nouppercase{\rightmark}}}% right-aligned on right pages
+  \fancyfoot[LE,RO]{\thepage}%                              page number on outer corner
 }
 
 %%---- tikz
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 %========================================================================
-\title{Sample Thesis Title}
-\author{Your Name}
-\date{}

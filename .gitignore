@@ -1,0 +1,51 @@
+## Core LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.toc
+*.tmb
+
+## BibTeX / Biber
+*.bak
+
+## Glossaries / Acronyms
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+
+## Nomenclature
+*.nlg
+*.nlo
+*.nls
+
+## Index
+*.idx
+*.ilg
+*.ind
+
+## Hyperref
+*.synctex.gz
+*.synctex(busy)
+
+## Compiled output — do NOT track the PDF in version control;
+## share rendered PDFs via a release or cloud storage instead.
+*.pdf
+
+## Editor temporaries
+*~
+*.swp
+.DS_Store
+Thumbs.db
