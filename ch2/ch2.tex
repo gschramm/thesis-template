@@ -1,8 +1,8 @@
 % Chapter 2 — Methods
 %
-% Demonstrates: \autoref for cross-referencing, full-width booktabs
-% table with tabularx, TikZ flowchart, siunitx for units, and
-% further aligned equations.
+% Demonstrates: \cref (single and multiple items), full-width booktabs
+% table with tabularx, TikZ flowchart, pgfplots line and scatter plots,
+% algorithmicx pseudocode, siunitx for units, and aligned equations.
 
 \chapter{Methods}
 \addthumb{Chapter 2}{\thechapter}{white}{thesisblue}
@@ -11,12 +11,14 @@
 \section{Figures and cross-referencing}
 
 Figures are placed in a \texttt{figure} float.
-Always supply a \verb|\label| so you can cross-reference elsewhere.
-Use \verb|\autoref{label}| (from \texttt{hyperref}) for automatically
-typed references such as ``\autoref{fig:ch2-setup}'', or plain
-\verb|\ref| if you want only the number.
+Always supply a \verb|\label| immediately after \verb|\caption| so
+you can cross-reference it elsewhere.
+The \texttt{cleveref} package provides \verb|\cref| and \verb|\Cref|,
+which automatically prepend the correct label type (Figure, Table,
+Equation, \ldots) and handle multiple items in one call:
+\verb|\cref{fig:a,fig:b}| produces \cref{fig:ch2-setup,fig:ch2-flow}.
 
-\begin{figure}
+\begin{figure}[p]
   \centering
   %--- Row 1 -----------------------------------------------------------
   \begin{subfigure}[b]{0.32\textwidth}
@@ -32,7 +34,7 @@ typed references such as ``\autoref{fig:ch2-setup}'', or plain
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\linewidth, height=48mm]{example-image-c}
+    \includegraphics[width=\linewidth, height=48mm]{example-image}
     \caption{Third condition.}
     \label{fig:ch2-setup-c}
   \end{subfigure}
@@ -53,7 +55,7 @@ typed references such as ``\autoref{fig:ch2-setup}'', or plain
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\linewidth, height=48mm]{example-image-c}
+    \includegraphics[width=\linewidth, height=48mm]{example-image}
     \caption{Sixth condition.}
     \label{fig:ch2-setup-f}
   \end{subfigure}
@@ -74,7 +76,7 @@ Use \texttt{booktabs} (no vertical rules, spaced horizontal rules)
 together with \texttt{tabularx} to span the full text width.
 The \texttt{X} column absorbs the remaining space; numeric columns
 stay centred at their natural width.
-\autoref{tab:ch2-methods} compares three placeholder methods.
+\Cref{tab:ch2-methods} compares three placeholder methods.
 
 \begin{table}[t]
   \centering
@@ -103,7 +105,7 @@ stay centred at their natural width.
 \section{Diagrams with TikZ}
 
 Flowcharts and processing pipelines can be drawn directly in \LaTeX{}
-using the \texttt{tikz} package (\autoref{fig:ch2-flow}).
+using the \texttt{tikz} package (\cref{fig:ch2-flow}).
 This avoids raster artefacts and keeps diagrams typographically
 consistent with the surrounding text.
 
@@ -138,6 +140,130 @@ consistent with the surrounding text.
   \label{fig:ch2-flow}
 \end{figure}
 
+\section{Data visualisation with \texttt{pgfplots}}
+
+The \texttt{pgfplots} package generates publication-quality plots
+directly in \LaTeX{}, keeping fonts, colours, and line widths
+consistent with the surrounding text.
+\Cref{fig:ch2-plots} shows two common plot types: a line plot of
+training loss curves (\cref{fig:ch2-loss}) and a scatter plot of
+two-class feature data (\cref{fig:ch2-scatter}).
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width  = \linewidth,
+        height = 52mm,
+        xlabel = {Epoch},
+        ylabel = {Training loss},
+        xmin=0, xmax=100,
+        ymin=0, ymax=2.5,
+        legend pos   = north east,
+        legend style = {font=\footnotesize},
+        grid         = major,
+        grid style   = {dashed, gray!30},
+        tick label style = {font=\footnotesize},
+        label style      = {font=\small},
+      ]
+        \addplot[thick, color=thesisblue] coordinates {
+          (0,2.30)(10,1.78)(20,1.38)(30,1.07)(40,0.84)
+          (50,0.66)(60,0.53)(70,0.43)(80,0.36)(90,0.31)(100,0.28)
+        };
+        \addlegendentry{Proposed}
+        \addplot[thick, dashed, color=red!70!black] coordinates {
+          (0,2.30)(10,2.02)(20,1.76)(30,1.54)(40,1.35)
+          (50,1.19)(60,1.05)(70,0.94)(80,0.85)(90,0.78)(100,0.73)
+        };
+        \addlegendentry{Baseline}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Training loss over 100 epochs.}
+    \label{fig:ch2-loss}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width  = \linewidth,
+        height = 52mm,
+        xlabel = {Feature $x_1$},
+        ylabel = {Feature $x_2$},
+        legend pos   = north west,
+        legend style = {font=\footnotesize},
+        grid         = major,
+        grid style   = {dashed, gray!30},
+        tick label style = {font=\footnotesize},
+        label style      = {font=\small},
+      ]
+        \addplot[only marks, mark=*, color=thesisblue,
+                 mark size=1.8pt] coordinates {
+          (1.1,2.2)(1.5,1.9)(0.8,2.5)(1.3,1.8)(1.7,2.4)
+          (0.9,1.6)(1.4,2.1)(1.2,2.6)(1.6,1.7)(0.7,2.3)
+        };
+        \addlegendentry{Class A}
+        \addplot[only marks, mark=square*, color=red!70!black,
+                 mark size=1.8pt] coordinates {
+          (3.1,0.9)(2.8,1.2)(3.4,0.7)(2.9,1.1)(3.2,0.5)
+          (3.5,1.0)(2.7,0.8)(3.0,1.3)(3.3,0.6)(2.6,1.0)
+        };
+        \addlegendentry{Class B}
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Two linearly separable classes.}
+    \label{fig:ch2-scatter}
+  \end{subfigure}
+  \caption{Data visualisation with \texttt{pgfplots}.
+           \subref{fig:ch2-loss}~Training loss for the proposed and
+           baseline methods; the proposed method converges faster and
+           to a lower final value.
+           \subref{fig:ch2-scatter}~Scatter plot of two-class data in
+           the feature space; the classes are linearly
+           separable~\cite{lecun1998}.}
+  \label{fig:ch2-plots}
+\end{figure}
+
+\section{Algorithm pseudocode}
+
+Pseudocode is typeset using the \texttt{algorithm} float together
+with the \texttt{algpseudocode} environment from the
+\texttt{algorithmicx} bundle.
+Line numbers are enabled by passing \texttt{[1]} to
+\texttt{algorithmic}.
+\Cref{alg:sgd} implements the update rule from
+\cref{eq:ch2-sgd,eq:ch2-lr}.
+
+\begin{algorithm}[t]
+  \caption{Mini-batch stochastic gradient descent}
+  \label{alg:sgd}
+  \begin{algorithmic}[1]
+    \Require Training set $\mathcal{D}$, initial learning rate
+             $\eta_{0}$, decay $\gamma$, step size $s$, batch
+             size $B$
+    \Ensure  Trained parameters $\boldsymbol{\theta}$
+    \State Initialise $\boldsymbol{\theta}$ randomly
+    \For{$t = 0, 1, 2, \ldots$}
+      \State Sample mini-batch
+             $\mathcal{B} \subset \mathcal{D}$,\;
+             $|\mathcal{B}| = B$
+      \State $\hat{g} \gets \dfrac{1}{B}
+             \displaystyle\sum_{(\mathbf{x},y)\in\mathcal{B}}
+             \nabla_{\!\boldsymbol{\theta}}\,
+             \ell\!\left(f_{\boldsymbol{\theta}}(\mathbf{x}),
+             y\right)$
+             \Comment{gradient estimate}
+      \State $\eta_{t} \gets \eta_{0}\cdot
+             \gamma^{\lfloor t/s \rfloor}$
+             \Comment{decayed rate, \cref{eq:ch2-lr}}
+      \State $\boldsymbol{\theta} \gets \boldsymbol{\theta}
+             - \eta_{t}\,\hat{g}$
+             \Comment{parameter update, \cref{eq:ch2-sgd}}
+    \EndFor
+    \State \Return $\boldsymbol{\theta}$
+  \end{algorithmic}
+\end{algorithm}
+
 \section{Further equations and units}
 
 The cross-entropy loss for a $K$-class classifier is
@@ -168,7 +294,8 @@ descent gives the update rule
 where $\eta_{0}$ is the initial learning rate, $\gamma < 1$ is the
 decay factor, and $s$ is the step size~\cite{lecun1998}.
 
-Use the \texttt{siunitx} package for physical quantities and units.
+Use the \texttt{siunitx} package for all physical quantities and
+units to ensure consistent spacing and upright unit symbols.
 For example, the experiment ran for \SI{72}{\hour} on a GPU with
 \SI{40}{\giga\byte} of memory, achieving an accuracy of
 \SI{88.1}{\percent} after \num{50000} gradient steps.

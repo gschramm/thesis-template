@@ -67,6 +67,48 @@ funding agencies, and anyone else who contributed to the work.
 
 \cleardoublepage
 
+%---- List of symbols ------------------------------------------------
+\chapter*{List of symbols}
+\addcontentsline{toc}{chapter}{List of symbols}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+  \toprule
+  \textbf{Symbol} & \textbf{Description} \\
+  \midrule
+  $\mathbb{R}$, $\mathbb{C}$
+    & Set of real and complex numbers \\
+  $\mathbf{x}$, $\mathbf{y}$
+    & Column vectors (bold lowercase) \\
+  $\mathbf{W}$, $\mathbf{A}$
+    & Matrices (bold uppercase) \\
+  $\mathbf{I}_{n}$
+    & Identity matrix of size $n\times n$ \\
+  $f * g$
+    & Convolution of functions $f$ and $g$ \\
+  $\hat{f}(\xi)$
+    & Fourier transform of $f$ evaluated at frequency $\xi$ \\
+  $\langle\,\cdot\,,\,\cdot\,\rangle$
+    & Inner product \\
+  $\|\cdot\|_{2}$
+    & Euclidean ($\ell^{2}$) norm \\
+  $\mathbf{1}[\,\cdot\,]$
+    & Indicator function \\
+  $\mathcal{L}(\boldsymbol{\theta})$
+    & Loss function parameterised by $\boldsymbol{\theta}$ \\
+  $\nabla_{\!\boldsymbol{\theta}}$
+    & Gradient operator with respect to $\boldsymbol{\theta}$ \\
+  $\eta$, $\eta_{t}$
+    & Learning rate (at step $t$) \\
+  $\mu$, $\sigma^{2}$
+    & Mean and variance of a distribution \\
+  $F(x)$, $\hat{F}(x)$
+    & Cumulative distribution function and its empirical estimate \\
+  $\operatorname{ReLU}(x)$
+    & Rectified linear unit: $\max(0,x)$ \\
+  \bottomrule
+\end{tabularx}
+
+\cleardoublepage
+
 \tableofcontents
 
 \printacronyms
@@ -78,6 +120,10 @@ funding agencies, and anyone else who contributed to the work.
 \include{ch1/ch1}
 \include{ch2/ch2}
 \include{ch3/ch3}
+
+%---- Appendix -------------------------------------------------------
+\appendix
+\include{appendix/app}
 
 \stopthumb
 

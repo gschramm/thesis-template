@@ -1,0 +1,175 @@
+% Appendix A — Mathematical derivations
+%
+% Demonstrates: appendix chapter structure, lengthy multi-step
+% derivations with align, cross-references to equations defined in
+% earlier chapters, and \notag to suppress intermediate labels.
+
+\chapter{Mathematical derivations}
+\addthumb{Appendix}{\thechapter}{white}{thesisblue}
+\clearpage
+
+This appendix contains the proofs of two fundamental results from
+Fourier analysis that underlie the signal-processing content of
+\cref{ch1/ch1}.
+Both theorems follow from the Fourier transform pair defined in
+\cref{eq:ch1-fourier-fwd,eq:ch1-fourier-inv} in Chapter~1.
+
+\section{The convolution theorem}
+
+\textbf{Theorem.}
+\textit{Let $f, g \in L^{1}(\mathbb{R})$.
+Then}
+\begin{equation}
+  \mathcal{F}\{f * g\}(\xi) = \hat{f}(\xi)\cdot\hat{g}(\xi),
+  \label{eq:app-convthm}
+\end{equation}
+\textit{i.e., the Fourier transform maps convolution
+(defined in~\eqref{eq:ch1-convolution}) to pointwise multiplication.}
+
+\medskip
+\textbf{Proof.}
+Starting from the definition of the Fourier transform
+(\cref{eq:ch1-fourier-fwd}) and substituting the convolution
+(\cref{eq:ch1-convolution}):
+
+\begin{align}
+  \mathcal{F}\{f * g\}(\xi)
+    &= \int_{-\infty}^{\infty}
+         (f * g)(t)\,e^{-2\pi i\xi t}\,dt
+       \label{eq:app-conv-step1} \\
+    &= \int_{-\infty}^{\infty}
+         \left(
+           \int_{-\infty}^{\infty} f(\tau)\,g(t-\tau)\,d\tau
+         \right)
+         e^{-2\pi i\xi t}\,dt.
+       \notag
+\end{align}
+
+Since $f, g \in L^{1}$, Fubini's theorem permits interchanging
+the order of integration:
+
+\begin{align}
+  &= \int_{-\infty}^{\infty} f(\tau)
+       \left(
+         \int_{-\infty}^{\infty} g(t-\tau)\,
+         e^{-2\pi i\xi t}\,dt
+       \right) d\tau.
+     \label{eq:app-conv-fubini}
+\end{align}
+
+Substitute $u = t - \tau$ (so $t = u + \tau$ and $dt = du$) in the
+inner integral:
+
+\begin{align}
+  &= \int_{-\infty}^{\infty} f(\tau)
+       \left(
+         \int_{-\infty}^{\infty} g(u)\,
+         e^{-2\pi i\xi(u+\tau)}\,du
+       \right) d\tau \notag \\
+  &= \int_{-\infty}^{\infty} f(\tau)\,e^{-2\pi i\xi\tau}
+       \underbrace{%
+         \left(
+           \int_{-\infty}^{\infty} g(u)\,
+           e^{-2\pi i\xi u}\,du
+         \right)%
+       }_{=\,\hat{g}(\xi)}
+     d\tau
+     \label{eq:app-conv-factor} \\
+  &= \hat{g}(\xi)
+     \underbrace{%
+       \int_{-\infty}^{\infty} f(\tau)\,
+       e^{-2\pi i\xi\tau}\,d\tau%
+     }_{=\,\hat{f}(\xi)}
+     \notag \\
+  &= \hat{f}(\xi)\cdot\hat{g}(\xi).
+     \label{eq:app-conv-result}
+\end{align}
+
+This establishes~\eqref{eq:app-convthm}.\hfill$\square$
+
+\bigskip
+
+A direct consequence is that filtering in the time domain (a
+convolution) is equivalent to multiplication in the frequency
+domain, which is why frequency-domain filtering is computationally
+attractive: an $\mathcal{O}(n^{2})$ time-domain convolution becomes
+an $\mathcal{O}(n\log n)$ operation via the Fast Fourier Transform.
+
+\section{Parseval's theorem}
+
+\textbf{Theorem (Parseval / Rayleigh).}
+\textit{Let $f \in L^{2}(\mathbb{R})$.
+Then}
+\begin{equation}
+  \int_{-\infty}^{\infty} \lvert f(t) \rvert^{2}\,dt
+  =
+  \int_{-\infty}^{\infty} \lvert \hat{f}(\xi) \rvert^{2}\,d\xi.
+  \label{eq:app-parseval}
+\end{equation}
+\textit{The Fourier transform is therefore an isometry on
+$L^{2}(\mathbb{R})$: it preserves the total energy of a signal.}
+
+\medskip
+\textbf{Proof.}
+Write $\lvert f(t)\rvert^{2} = f(t)\,\overline{f(t)}$ and express
+the complex conjugate $\overline{f(t)}$ via the inverse Fourier
+transform (\cref{eq:ch1-fourier-inv}):
+
+\begin{align}
+  \overline{f(t)}
+    &= \overline{
+         \int_{-\infty}^{\infty}
+           \hat{f}(\xi)\,e^{+2\pi i\xi t}\,d\xi
+       }
+     = \int_{-\infty}^{\infty}
+         \overline{\hat{f}(\xi)}\,
+         e^{-2\pi i\xi t}\,d\xi.
+     \label{eq:app-conj}
+\end{align}
+
+Substituting~\eqref{eq:app-conj}:
+
+\begin{align}
+  \int_{-\infty}^{\infty} \lvert f(t)\rvert^{2}\,dt
+    &= \int_{-\infty}^{\infty} f(t)
+         \left(
+           \int_{-\infty}^{\infty}
+             \overline{\hat{f}(\xi)}\,
+             e^{-2\pi i\xi t}\,d\xi
+         \right) dt.
+       \label{eq:app-pars-step1}
+\end{align}
+
+Interchanging the order of integration (Fubini's theorem, valid
+since $f \in L^{2}$ and $\hat{f} \in L^{2}$):
+
+\begin{align}
+  &= \int_{-\infty}^{\infty} \overline{\hat{f}(\xi)}
+       \underbrace{%
+         \left(
+           \int_{-\infty}^{\infty} f(t)\,
+           e^{-2\pi i\xi t}\,dt
+         \right)%
+       }_{=\,\hat{f}(\xi)}
+     d\xi
+     \label{eq:app-pars-fubini} \\
+  &= \int_{-\infty}^{\infty}
+       \overline{\hat{f}(\xi)}\,\hat{f}(\xi)\,d\xi \notag \\
+  &= \int_{-\infty}^{\infty}
+       \lvert\hat{f}(\xi)\rvert^{2}\,d\xi,
+     \label{eq:app-pars-result}
+\end{align}
+
+where the last step uses $\bar{z}z = \lvert z \rvert^{2}$ for any
+$z \in \mathbb{C}$.
+This establishes~\eqref{eq:app-parseval}.\hfill$\square$
+
+\bigskip
+
+Parseval's theorem has an important physical interpretation: the
+total energy computed in the time domain equals the total energy
+computed in the frequency domain.
+In the context of the \ac{snr} definition used in Chapter~1,
+this means that filtering operations that attenuate
+noise in the frequency domain produce a provably equivalent reduction
+in time-domain noise energy.

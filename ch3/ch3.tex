@@ -1,8 +1,9 @@
 % Chapter 3 — Results and general conclusion
 %
-% Demonstrates: equations with cross-references to earlier chapters,
-% itemize / enumerate / description lists, siunitx for reporting
-% results with units, and a closing contributions summary.
+% Demonstrates: equations cross-referencing earlier chapters,
+% itemize / enumerate / description lists, siunitx for results,
+% longtable for multi-page benchmark tables, and \cref for
+% multiple-item cross-references.
 
 \chapter{Results and general conclusion}
 \addthumb{Chapter 3}{\thechapter}{white}{thesisblue}
@@ -37,17 +38,83 @@ with mean $\mu$ and standard deviation $\sigma$~\cite{bishop2006}.
 The key quantitative results are:
 
 \begin{itemize}
-  \item The proposed method (\autoref{tab:ch2-methods}) achieved a
+  \item The proposed method (\cref{tab:ch2-methods}) achieved a
         \SI{15.8}{\percent} improvement in accuracy over the
         baseline.
   \item The \ac{snr} increased from \SI{12}{\decibel} to
         \SI{18}{\decibel} after preprocessing
-        (see \autoref{fig:ch2-flow}).
+        (see \cref{fig:ch2-flow}).
   \item Runtime remained within the real-time budget of
         \SI{2}{\second} per sample on all test cases.
   \item The area under the \ac{roc} curve reached \num{0.93},
-        compared with \num{0.81} for the baseline.
+        compared with \num{0.81} for the baseline
+        (see \cref{fig:ch2-plots,fig:ch2-scatter}).
 \end{itemize}
+
+\subsection{Benchmark results across datasets}
+
+\Cref{tab:ch3-benchmark} reports performance on a suite of
+\num{20}~benchmark datasets.
+It is typeset with \texttt{longtable} so that it continues
+automatically onto the next page; the column header is repeated
+at the top of each continuation page.
+For very wide tables (many columns), wrap the \texttt{longtable}
+environment in \verb|\begin{landscape}...\end{landscape}| from
+the \texttt{pdflscape} package.
+
+% longtable: caption appears above the table (before \endhead).
+% \endfirsthead  — header printed on the first page only
+% \endhead       — header repeated on continuation pages
+% \endfoot       — footer on all pages except the last
+% \endlastfoot   — footer on the last page only
+\begin{longtable}{@{}lcccc@{}}
+  %--- First-page header -----------------------------------------------
+  \caption{Benchmark accuracy (\%), F1 score, ROC-AUC, and runtime
+           for the proposed method across \num{20} datasets.
+           Results are averaged over five independent runs.}
+  \label{tab:ch3-benchmark} \\
+  \toprule
+  \textbf{Dataset} & \textbf{Acc.\ (\%)} & \textbf{F1}
+                   & \textbf{AUC}        & \textbf{Time (s)} \\
+  \midrule
+  \endfirsthead
+  %--- Continuation header ---------------------------------------------
+  \multicolumn{5}{l}{\footnotesize\textit{%
+    \Cref{tab:ch3-benchmark} continued from previous page}} \\
+  \toprule
+  \textbf{Dataset} & \textbf{Acc.\ (\%)} & \textbf{F1}
+                   & \textbf{AUC}        & \textbf{Time (s)} \\
+  \midrule
+  \endhead
+  %--- Continuation footer ---------------------------------------------
+  \midrule
+  \multicolumn{5}{r}{\footnotesize\textit{continued on next page}} \\
+  \endfoot
+  %--- Last-page footer ------------------------------------------------
+  \bottomrule
+  \endlastfoot
+  %--- Data rows -------------------------------------------------------
+  Dataset A   & 88.1 & 0.87 & 0.93 & 1.2 \\
+  Dataset B   & 85.6 & 0.84 & 0.90 & 0.9 \\
+  Dataset C   & 91.3 & 0.91 & 0.95 & 2.1 \\
+  Dataset D   & 79.4 & 0.78 & 0.86 & 0.6 \\
+  Dataset E   & 83.7 & 0.82 & 0.88 & 1.4 \\
+  Dataset F   & 76.2 & 0.75 & 0.83 & 0.5 \\
+  Dataset G   & 92.5 & 0.92 & 0.96 & 3.4 \\
+  Dataset H   & 87.0 & 0.86 & 0.92 & 1.8 \\
+  Dataset I   & 81.9 & 0.80 & 0.87 & 1.1 \\
+  Dataset J   & 94.1 & 0.94 & 0.97 & 4.2 \\
+  Dataset K   & 73.8 & 0.72 & 0.81 & 0.4 \\
+  Dataset L   & 89.4 & 0.89 & 0.94 & 2.6 \\
+  Dataset M   & 84.2 & 0.83 & 0.89 & 1.3 \\
+  Dataset N   & 78.6 & 0.77 & 0.84 & 0.7 \\
+  Dataset O   & 90.8 & 0.90 & 0.95 & 2.9 \\
+  Dataset P   & 86.3 & 0.85 & 0.91 & 1.6 \\
+  Dataset Q   & 82.5 & 0.81 & 0.88 & 1.0 \\
+  Dataset R   & 95.0 & 0.95 & 0.98 & 5.1 \\
+  Dataset S   & 77.1 & 0.76 & 0.83 & 0.6 \\
+  Dataset T   & 88.9 & 0.88 & 0.93 & 2.0 \\
+\end{longtable}
 
 \section{Discussion}
 
@@ -68,6 +135,8 @@ requires the following conditions to hold:
 The learning-rate schedule in~\eqref{eq:ch2-lr} was found to reduce
 the training loss by a factor of \num{3.2} compared with a fixed
 rate, consistent with the findings of~\cite{hochreiter1997}.
+The loss curves in \cref{fig:ch2-loss,fig:ch2-plots} confirm that
+convergence is both faster and more stable for the proposed method.
 
 \section{General conclusion}
 

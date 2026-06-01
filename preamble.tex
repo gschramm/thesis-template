@@ -16,6 +16,8 @@
 \usepackage{setspace}
 \setstretch{1.15}
 \setlength{\parindent}{1.2em}
+\widowpenalty=10000   % forbid widows (lone line at top of page)
+\clubpenalty=10000    % forbid orphans (lone line at bottom of page)
 
 %---- Colors ------------------------------------------------------------
 \usepackage{xcolor}
@@ -41,6 +43,12 @@
 ]{hyperref}
 \usepackage[titletoc]{appendix}
 \usepackage{lipsum}
+\usepackage{csquotes}    % context-sensitive quotation marks via \enquote{}
+\usepackage{longtable}   % tables that span multiple pages
+\usepackage{pdflscape}   % landscape pages for wide tables/figures
+
+%---- Smart cross-references (must come after hyperref) -----------------
+\usepackage[capitalise, noabbrev]{cleveref}
 
 %---- Bibliography (per-chapter) ----------------------------------------
 \usepackage[
@@ -102,7 +110,13 @@
   \fancyfoot[LE,RO]{\thepage}%                              page number on outer corner
 }
 
-%%---- tikz
+%%---- TikZ and pgfplots ------------------------------------------------
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%%---- Algorithms -------------------------------------------------------
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 %========================================================================

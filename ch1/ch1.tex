@@ -2,7 +2,8 @@
 %
 % Demonstrates: inline math, displayed equations, aligned multi-line
 % equations, equation references with \eqref, piecewise (cases),
-% matrix–vector notation, acronyms, figures, and citations.
+% matrix–vector notation, acronyms, figures, citations, and
+% typography rules for scientific writing.
 
 \chapter{Introduction and mathematical background}
 \addthumb{Introduction}{\thechapter}{white}{thesisblue}
@@ -112,7 +113,72 @@ Place the \verb|\label| \emph{inside} or immediately after the
 \end{figure}
 
 An overview of the experimental setup is shown in
-Figure~\ref{fig:ch1-example}.
+\cref{fig:ch1-example}.
 \lipsum[3]
+
+\section{Typography rules for scientific writing}
+
+Good typography is invisible — it lets the reader focus on the
+content rather than the presentation.
+The rules below address the most common errors in first drafts.
+
+\paragraph{Dashes.}
+Three dash lengths exist.
+A \emph{hyphen} (\texttt{-}) joins compound words:
+signal-to-noise, well-known.
+An \emph{en-dash} (\texttt{-{}-}) denotes a range or connects
+equal-weight terms: pages~12--15, the Nyquist--Shannon theorem,
+the Cauchy--Schwarz inequality.
+An \emph{em-dash} (\texttt{-{}-{}-}) marks a strong parenthetical
+break---like this one---with no surrounding spaces.
+
+\paragraph{Non-breaking spaces.}
+Use a tilde (\verb|~|) to prevent a line break between a label and
+its number: \verb|Figure~\ref{...}|, \verb|Table~\ref{...}|,
+\verb|Section~\ref{...}|, \verb|p.~12|.
+Without it, the number may be stranded alone at the start of a new
+line.
+
+\paragraph{Ellipsis.}
+Use \verb|\ldots| or \verb|\dots| to produce a proper ellipsis
+($\ldots$), not three typed dots (\verb|...|), which produce
+different spacing.
+Inside mathematics, \verb|\cdots| ($\cdots$) gives centred dots
+for sequences: $x_1, x_2, \ldots, x_n$.
+
+\paragraph{Quotation marks.}
+Never use typewriter double-quotes (\verb|"text"|).
+In plain \LaTeX{} write \verb|``text''|\ to get ``text''.
+With the \texttt{csquotes} package, \verb|\enquote{text}| adapts
+automatically to the document language and nesting level:
+\enquote{outer \enquote{inner} quote}.
+
+\paragraph{Mathematics in running text.}
+Every symbol must be typeset in math mode, even single letters.
+Write \emph{the parameter~$\alpha$}, not \emph{the parameter
+$\alpha$} without the tilde, and never \emph{the parameter alpha}.
+Avoid starting a sentence with a bare symbol; instead of
+\emph{$\alpha$ controls the decay}, write
+\emph{The parameter~$\alpha$ controls the decay}.
+
+\paragraph{Units.}
+Always place a thin space between a number and its unit, and never
+italicise units.
+The \texttt{siunitx} package handles this correctly and consistently:
+\verb|\SI{9.81}{\metre\per\second\squared}| produces
+\SI{9.81}{\metre\per\second\squared};
+\verb|\SIrange{10}{20}{\kilo\hertz}| produces
+\SIrange{10}{20}{\kilo\hertz}.
+
+\paragraph{Decimal alignment in tables.}
+Numeric columns look cleaner when digits align on the decimal point.
+Use \texttt{siunitx}'s \texttt{S} column type instead of \texttt{c}
+to achieve this automatically, without manual padding.
+
+\paragraph{Widows and orphans.}
+A \emph{widow} is a single line of a paragraph left at the top of a
+page; an \emph{orphan} is a single line left at the bottom.
+This template sets \verb|\widowpenalty| and \verb|\clubpenalty| to
+\num{10000} in \texttt{preamble.tex}, which effectively forbids both.
 
 \printbibliography[heading=subbibliography, title={References}]
