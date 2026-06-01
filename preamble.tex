@@ -21,7 +21,7 @@
 
 %---- Colors ------------------------------------------------------------
 \usepackage{xcolor}
-\definecolor{thesisblue}{RGB}{0, 51, 102}   % signature dark-navy blue
+\definecolor{thesiscolor}{RGB}{0, 51, 102}   % signature dark-navy blue
 \definecolor{headergray}{gray}{0.50}         % running-head tint
 
 %---- Mathematics -------------------------------------------------------
@@ -50,6 +50,12 @@
 
 %---- Smart cross-references (must come after hyperref) -----------------
 \usepackage[capitalise, noabbrev]{cleveref}
+
+%---- Draft aids --------------------------------------------------------
+\ifdraft
+  \usepackage{showlabels}
+  \renewcommand{\showlabelfont}{\tiny\ttfamily\color{headergray}}
+\fi
 
 %---- Bibliography (per-chapter) ----------------------------------------
 \usepackage[
@@ -82,7 +88,7 @@
 %%---- Chapter title format (titlesec) -----------------------------------
 \titleformat{\chapter}[display]
   {\normalfont\raggedright}
-  {\color{thesisblue}\sffamily\bfseries\fontsize{96pt}{96pt}\selectfont\thechapter}
+  {\color{thesiscolor}\sffamily\bfseries\fontsize{96pt}{96pt}\selectfont\thechapter}
   {6pt}
   {\Huge\bfseries\sffamily}
 
@@ -101,7 +107,7 @@
   %                 rightmark = chapter title (shown on right/odd pages)
   \renewcommand{\chaptermark}[1]{%
     \markboth{Chapter~\arabic{chapter}}{#1}%
-    %\addthumb{#1}{\thechapter}{white}{thesisblue}%
+    %\addthumb{#1}{\thechapter}{white}{thesiscolor}%
   }%
   \renewcommand{\sectionmark}[1]{}% keep rightmark = chapter title, not section
   \pagestyle{fancy}%

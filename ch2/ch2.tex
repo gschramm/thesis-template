@@ -5,7 +5,7 @@
 % algorithmicx pseudocode, siunitx for units, and aligned equations.
 
 \chapter{Methods}
-\addthumb{Chapter 2}{\thechapter}{white}{thesisblue}
+\addthumb{Chapter 2}{\thechapter}{white}{thesiscolor}
 \clearpage
 
 \section{Figures and cross-referencing}
@@ -34,7 +34,7 @@ Equation, \ldots) and handle multiple items in one call:
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\linewidth, height=48mm]{example-image}
+    \includegraphics[width=\linewidth, height=48mm]{example-image-c}
     \caption{Third condition.}
     \label{fig:ch2-setup-c}
   \end{subfigure}
@@ -55,7 +55,7 @@ Equation, \ldots) and handle multiple items in one call:
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.32\textwidth}
-    \includegraphics[width=\linewidth, height=48mm]{example-image}
+    \includegraphics[width=\linewidth, height=48mm]{example-image-c}
     \caption{Sixth condition.}
     \label{fig:ch2-setup-f}
   \end{subfigure}
@@ -167,7 +167,7 @@ two-class feature data (\cref{fig:ch2-scatter}).
         tick label style = {font=\footnotesize},
         label style      = {font=\small},
       ]
-        \addplot[thick, color=thesisblue] coordinates {
+        \addplot[thick, color=thesiscolor] coordinates {
           (0,2.30)(10,1.78)(20,1.38)(30,1.07)(40,0.84)
           (50,0.66)(60,0.53)(70,0.43)(80,0.36)(90,0.31)(100,0.28)
         };
@@ -197,7 +197,7 @@ two-class feature data (\cref{fig:ch2-scatter}).
         tick label style = {font=\footnotesize},
         label style      = {font=\small},
       ]
-        \addplot[only marks, mark=*, color=thesisblue,
+        \addplot[only marks, mark=*, color=thesiscolor,
                  mark size=1.8pt] coordinates {
           (1.1,2.2)(1.5,1.9)(0.8,2.5)(1.3,1.8)(1.7,2.4)
           (0.9,1.6)(1.4,2.1)(1.2,2.6)(1.6,1.7)(0.7,2.3)
