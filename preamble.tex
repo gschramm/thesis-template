@@ -27,6 +27,7 @@
 %---- Mathematics -------------------------------------------------------
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{amsthm}  % for math theorems
 \usepackage{siunitx}
 
 %---- General packages --------------------------------------------------
@@ -37,7 +38,10 @@
 \usepackage{tabularx}
 \usepackage{microtype}
 \usepackage[
-  hidelinks,
+  %hidelinks,
+  colorlinks = true,
+  linkcolor = darkgray,
+  citecolor = darkgray,
   pdftitle  = \ThesisTitle,
   pdfauthor = \ThesisAuthor,
 ]{hyperref}
